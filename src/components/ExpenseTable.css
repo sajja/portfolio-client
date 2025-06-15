@@ -1,0 +1,15 @@
+.expense-table-root {
+  color: black;
+  font-size: 1.1em;
+  padding: 1em;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+}
+
+.expense-import-bar {
+  margin-bottom: 1em;
+  display: flex;
+  align-items: center;
+  gap: 1em;
+}
