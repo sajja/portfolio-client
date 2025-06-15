@@ -33,14 +33,22 @@ const ExpenseTable = () => {
     <div className="expense-table-root">
       <h2>My Expense</h2>
       <div className="expense-import-bar">
+        <span className="import-expenses-label">Import Expenses</span>
         <select value={selectedMonth} onChange={handleMonthChange}>
           <option value="">Select Month</option>
           {months.map((month, idx) => (
             <option key={month} value={month}>{month}</option>
           ))}
         </select>
-        <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} />
-        <button onClick={handleImport}>Import Monthly Expense Report</button>
+        <input type="file" accept=".csv,.xlsx,.xls" onChange={handleFileChange} style={{ display: 'none' }} id="expense-import-file" />
+        <label htmlFor="expense-import-file" className="expense-import-icon-label">
+          <img
+            src="/icons/upload.png"
+            alt="Upload"
+            className="upload-icon"
+            onClick={handleImport}
+          />
+        </label>
       </div>
       <p>Expense table coming soon...</p>
     </div>
