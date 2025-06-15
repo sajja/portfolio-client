@@ -3,15 +3,18 @@
   font-size: 1.15em;
   margin-bottom: 2px;
   text-align: center;
+  color: #000;
 }
 
 .portfolio-summary-section {
   margin-bottom: 12px;
+  color: #000;
 }
 
 .collapsible-summary-root {
   margin: 24px 0;
   padding-left: 0;
+  color: #000;
 }
 
 .collapsible-summary-btn {
@@ -24,10 +27,12 @@
   align-items: center;
   margin-bottom: 4px;
   padding-left: 0;
+  color: #000;
 }
 
 .collapsible-summary-arrow {
   margin-right: 6px;
+  color: #000;
 }
 
 .collapsible-summary-content {
@@ -37,6 +42,7 @@
   padding: 16px;
   min-height: 40px;
   margin-left: 0;
+  color: #000;
 }
 
 .portfolio-equity-current {
@@ -44,11 +50,13 @@
   align-items: center;
   margin-bottom: 12px;
   justify-content: space-between;
+  color: #000;
 }
 
 .portfolio-equity-current-title {
   font-weight: bold;
   font-size: 1.1em;
+  color: #000;
 }
 
 .portfolio-action-icon {

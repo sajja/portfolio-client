@@ -92,13 +92,22 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
       width: `${colWidths.Date}px`,
     },
     {
-      name: 'Value',
+      name: 'Purchase Value',
       selector: row =>
         Number(row.avg_price) && Number(row.qtty)
           ? (Number(row.avg_price) * Number(row.qtty)).toFixed(2)
           : '',
       width: `${colWidths.Value}px`,
     },
+    {
+      name: 'Traded price',
+      selector: row =>
+        Number(row.lastTradedPrice) && Number(row.qtty)
+          ? (Number(row.lastTradedPrice)).toFixed(2)
+          : '',
+      width: `${colWidths.Value}px`,
+    },
+ 
     {
       name: 'Comment',
       cell: (row, idx) => (

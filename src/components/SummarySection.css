@@ -2,6 +2,7 @@
   text-align: left;
   margin-bottom: 8px;
   margin-top: 8px;
+  color: #000;
 }
 
 .summary-toggle-btn {
@@ -13,10 +14,12 @@
   padding: 0;
   display: flex;
   align-items: center;
+  color: #000;
 }
 
 .summary-toggle-arrow {
   margin-right: 6px;
+  color: #000;
 }
 
 .summary-content {
@@ -26,6 +29,7 @@
   padding: 16px;
   margin-top: 6px;
   margin-bottom: 8px;
+  color: #000;
 }
 
 .summary-error {
@@ -40,14 +44,17 @@
   text-align: center;
   background: #fff;
   box-shadow: 0 1px 6px rgba(60,60,60,0.07);
+  color: #000;
 }
 
 .summary-table-header-row {
   background: #e3e9f6;
+  color: #000;
 }
 
 .summary-table-header {
   padding: 10px 8px;
+  color: #000;
 }
 
 .summary-table-header-left {
@@ -60,15 +67,18 @@
 
 .summary-table-row {
   background: #f8fafc;
+  color: #000;
 }
 
 .summary-table-label {
   font-weight: 500;
   padding: 8px 8px;
   border-bottom: 1px solid #e0e0e0;
+  color: #000;
 }
 
 .summary-table-cell {
   padding: 8px 8px;
   border-bottom: 1px solid #e0e0e0;
+  color: #000;
 }
