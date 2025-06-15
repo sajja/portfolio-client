@@ -6,6 +6,9 @@ import SummarySection from './SummarySection';
 import EquityTransactionSummaryTable from './EquityTransactionSummaryTable';
 import './EditableTable.css';
 
+// Define API base URL
+const API_BASE = 'http://localhost:3000/api/v1';
+
 // CollapsibleEquitySummary component
 const CollapsibleEquitySummary = () => {
   const [open, setOpen] = useState(false); // Not expanded by default
@@ -44,14 +47,14 @@ const EditableTable = () => {
   // Fetch portfolio and notes, then merge notes into portfolio rows
   const fetchPortfolio = async () => {
     // Fetch portfolio equity
-    const res = await fetch('http://localhost:3000/api/v1/portfolio/equity');
+    const res = await fetch(`${API_BASE}/portfolio/equity`);
     const data = await res.json();
     const stocks = data.stocks || [];
 
     // Fetch notes (dividend remarks)
     let notesMap = {};
     try {
-      const notesRes = await fetch('http://localhost:3000/api/v1/companies/divident?own=true');
+      const notesRes = await fetch(`${API_BASE}/companies/divident?own=true`);
       const notesJson = await notesRes.json();
       // For each symbol, concatenate all non-null remarks for that symbol
       notesMap = (notesJson.dividends || []).reduce((acc, div) => {
@@ -105,7 +108,7 @@ const EditableTable = () => {
   const handleBuySubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${buyForm.code}/buy`, {
+      const response = await fetch(`${API_BASE}/portfolio/equity/${buyForm.code}/buy`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -114,7 +117,7 @@ const EditableTable = () => {
         }),
       });
       if (!response.ok) throw new Error('Failed to add stock');
-      const updated = await fetch('http://localhost:3000/api/v1/portfolio/equity').then(res => res.json());
+      const updated = await fetch(`${API_BASE}/portfolio/equity`).then(res => res.json());
       setRows(updated.stocks || []);
       setShowBuyPopup(false);
       setBuyForm({ code: '', qtty: '', avg_price: '' });
@@ -135,7 +138,7 @@ const EditableTable = () => {
       return;
     }
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${sellForm.code}/sell`, {
+      const response = await fetch(`${API_BASE}/portfolio/equity/${sellForm.code}/sell`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -144,7 +147,7 @@ const EditableTable = () => {
         }),
       });
       if (!response.ok) throw new Error('Failed to sell stock');
-      const updated = await fetch('http://localhost:3000/api/v1/portfolio/equity').then(res => res.json());
+      const updated = await fetch(`${API_BASE}/portfolio/equity`).then(res => res.json());
       setRows(updated.stocks || []);
       setShowSellPopup(false);
       setSellForm({ code: '', qtty: '', price: '' });
@@ -167,7 +170,7 @@ const EditableTable = () => {
     setTxnStock(stockName);
     setShowTxnPopup(true);
     try {
-      const res = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${stockName}/transactions`);
+      const res = await fetch(`${API_BASE}/portfolio/equity/${stockName}/transactions`);
       const data = await res.json();
       setTxnRows(data.transactions || []);
     } catch {
@@ -184,7 +187,7 @@ const EditableTable = () => {
   const handleToggleSummary = async () => {
     if (!showSummary && !summaryData) {
       try {
-        const res = await fetch('http://localhost:3000/api/v1/portfolio/summary');
+        const res = await fetch(`${API_BASE}/portfolio/summary`);
         const data = await res.json();
         setSummaryData(data);
         console.log('summaryData:', data); // <-- Print summaryData to console
