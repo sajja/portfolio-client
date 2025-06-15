@@ -27,3 +27,32 @@
   margin-right: 0.5em;
   font-weight: 500;
 }
+
+.expense-preview-table.styled-table th {
+  background-color: #1976d2;
+  color: #fff;
+  font-weight: bold;
+  text-align: left;
+  padding: 8px;
+}
+
+.expense-preview-table.styled-table td {
+  padding: 8px;
+}
+
+.expense-preview-table.styled-table tbody tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.expense-preview-table.styled-table tbody tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.expense-table-scroll {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.expense-preview-container {
+  margin-top: 16px;
+}
