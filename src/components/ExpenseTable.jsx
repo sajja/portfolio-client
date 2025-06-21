@@ -8,6 +8,7 @@ const ExpenseTable = () => {
   const [importStatus, setImportStatus] = React.useState('');
   const [parsedRows, setParsedRows] = React.useState([]);
   const [allRows, setAllRows] = React.useState([]);
+  const [showToast, setShowToast] = React.useState(false);
 
   // List of required headers
   const REQUIRED_HEADERS = [
@@ -72,12 +73,18 @@ const ExpenseTable = () => {
     return [now.getFullYear(), now.getFullYear() - 1];
   };
 
+  const showToastMessage = (msg) => {
+    setImportStatus(msg);
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3000);
+  };
+
   // Import button handler
   const handleImportClick = async () => {
     if (!allRows.length) return;
     const monthNum = getMonthNumber(selectedMonth);
     if (!monthNum) {
-      setImportStatus('Invalid month selected.');
+      showToastMessage('Invalid month selected.');
       return;
     }
     // Filter allRows for selected year and month
@@ -90,7 +97,7 @@ const ExpenseTable = () => {
       );
     });
     if (filteredRows.length === 0) {
-      setImportStatus('No expenses found for selected year and month.');
+      showToastMessage('No expenses found for selected year and month.');
       return;
     }
     console.log('All rows to import:', filteredRows);
@@ -100,16 +107,19 @@ const ExpenseTable = () => {
       Expenses: filteredRows,
     };
     try {
-      setImportStatus('Importing...');
+      showToastMessage('Importing...');
       const res = await fetch('http://localhost:3000/api/v1/expense', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(payload)
       });
-      if (!res.ok) throw new Error('Import failed');
-      setImportStatus('Import successful!');
+      if (!res.ok) {
+        const errorJson = await res.json().catch(() => ({}));
+        throw new Error(errorJson.error);
+      }
+      showToastMessage('Import successful!');
     } catch (err) {
-      setImportStatus('Import failed: ' + err.message);
+      showToastMessage('Import failed: ' + err.message);
     }
   };
 
@@ -181,6 +191,24 @@ const ExpenseTable = () => {
         </div>
       )}
       <p>Expense table coming soon...</p>
+      {/* Toast notification for import status */}
+      {showToast && (
+        <div style={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          background: '#1976d2',
+          color: '#fff',
+          padding: '16px 32px',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px #888',
+          zIndex: 9999,
+          fontSize: 17,
+          fontWeight: 500,
+        }}>
+          {importStatus}
+        </div>
+      )}
     </div>
   );
 };
