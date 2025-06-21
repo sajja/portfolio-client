@@ -4,8 +4,10 @@ import Papa from 'papaparse';
 
 const ExpenseTable = () => {
   const [selectedMonth, setSelectedMonth] = React.useState('');
+  const [selectedYear, setSelectedYear] = React.useState(new Date().getFullYear());
   const [importStatus, setImportStatus] = React.useState('');
   const [parsedRows, setParsedRows] = React.useState([]);
+  const [allRows, setAllRows] = React.useState([]);
 
   // List of required headers
   const REQUIRED_HEADERS = [
@@ -29,6 +31,7 @@ const ExpenseTable = () => {
   const handleFileChange = (e) => {
     setImportStatus('');
     setParsedRows([]);
+    setAllRows([]);
     const file = e.target.files[0];
     if (!file) return;
     Papa.parse(file, {
@@ -48,12 +51,66 @@ const ExpenseTable = () => {
           return;
         }
         setImportStatus('File headers are correct!');
-        setParsedRows(data.slice(0, 5));
+        setParsedRows(data.slice(0, 5)); // for preview
+        setAllRows(data); // store all rows for import
       },
       error: (err) => {
         setImportStatus('Error parsing file: ' + err.message);
       }
     });
+  };
+
+  // Helper to get month number from month name
+  const getMonthNumber = (monthName) => {
+    const idx = months.findIndex(m => m === monthName);
+    return idx === -1 ? null : idx + 1;
+  };
+
+  // Helper to get year options (current and previous year)
+  const getYearOptions = () => {
+    const now = new Date();
+    return [now.getFullYear(), now.getFullYear() - 1];
+  };
+
+  // Import button handler
+  const handleImportClick = async () => {
+    if (!allRows.length) return;
+    const monthNum = getMonthNumber(selectedMonth);
+    if (!monthNum) {
+      setImportStatus('Invalid month selected.');
+      return;
+    }
+    // Filter allRows for selected year and month
+    const filteredRows = allRows.filter(row => {
+      if (!row.Date) return false;
+      const dateObj = new Date(row.Date);
+      return (
+        dateObj.getFullYear() === selectedYear &&
+        dateObj.getMonth() + 1 === monthNum
+      );
+    });
+    if (filteredRows.length === 0) {
+      setImportStatus('No expenses found for selected year and month.');
+      return;
+    }
+    console.log('All rows to import:', filteredRows);
+    const payload = {
+      Year: selectedYear,
+      Month: monthNum,
+      Expenses: filteredRows,
+    };
+    try {
+      setImportStatus('Importing...');
+      const res = await fetch('http://localhost:3000/api/v1/expense', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      if (!res.ok) throw new Error('Import failed');
+      setImportStatus('Import successful!');
+    } catch (err) {
+      setImportStatus('Import failed: ' + err.message);
+    }
   };
 
   return (
@@ -97,6 +154,17 @@ const ExpenseTable = () => {
             </table>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', marginTop: 16 }}>
+            <label htmlFor="year-select" style={{ marginRight: 8, fontWeight: 500 }}>Year:</label>
+            <select
+              id="year-select"
+              value={selectedYear}
+              onChange={e => setSelectedYear(Number(e.target.value))}
+              style={{ padding: '6px 12px', borderRadius: 4, border: '1px solid #ccc', fontSize: 15, marginRight: 16 }}
+            >
+              {getYearOptions().map((year) => (
+                <option key={year} value={year}>{year}</option>
+              ))}
+            </select>
             <label htmlFor="month-select" style={{ marginRight: 8, fontWeight: 500 }}>Month:</label>
             <select
               id="month-select"
@@ -108,7 +176,7 @@ const ExpenseTable = () => {
                 <option key={month} value={month}>{month}</option>
               ))}
             </select>
-            <button className="import-btn" style={{padding: '8px 24px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 600, cursor: 'pointer'}}>Import</button>
+            <button className="import-btn" style={{padding: '8px 24px', background: '#1976d2', color: '#fff', border: 'none', borderRadius: 4, fontWeight: 600, cursor: 'pointer'}} onClick={handleImportClick}>Import</button>
           </div>
         </div>
       )}
