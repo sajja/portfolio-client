@@ -79,18 +79,18 @@ const ExpenseSummaryCharts = ({ summary }) => {
   };
 
   // Chart for monthly category breakdown
-  const summaryArr = months.map(m => summary[m] || {});
-  const allCats = Array.from(new Set(
-    summaryArr.flatMap(m => m.categories ? Object.keys(m.categories) : [])
-  ));
-  const categoryChartData = {
-    labels: months,
-    datasets: allCats.map((cat, i) => ({
-      label: cat,
-      data: summaryArr.map(m => (m.categories && m.categories[cat] !== undefined) ? m.categories[cat] : 0),
-      backgroundColor: `hsl(${(i * 47) % 360}, 60%, 60%)`,
-    })),
-  };
+//   const summaryArr = months.map(m => summary[m] || {});
+//   const allCats = Array.from(new Set(
+//     summaryArr.flatMap(m => m.categories ? Object.keys(m.categories) : [])
+//   ));
+//   const categoryChartData = {
+//     labels: months,
+//     datasets: allCats.map((cat, i) => ({
+//       label: cat,
+//       data: summaryArr.map(m => (m.categories && m.categories[cat] !== undefined) ? m.categories[cat] : 0),
+//       backgroundColor: `hsl(${(i * 47) % 360}, 60%, 60%)`,
+//     })),
+//   };
   return (
     <>
       <div style={{ width: '100%', display: 'flex', flexDirection: 'row', gap: 24, alignItems: 'flex-start', marginBottom: 24 }}>
@@ -153,24 +153,6 @@ const ExpenseSummaryCharts = ({ summary }) => {
             </table>
           </div>
         )}
-      </div>
-      <div style={{ maxWidth: `80%`, minWidth: 220, background: '#fff', padding: 8, borderRadius: 8, boxShadow: '0 2px 8px #eee', height: 320 }}>
-        <Bar
-          key={`category-bar-${allCats.join('-')}`}
-          data={categoryChartData}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: { display: true, position: 'top' },
-              title: { display: true, text: 'Monthly Expenses by Category' },
-            },
-            scales: {
-              y: { beginAtZero: true }
-            }
-          }}
-          height={240}
-        />
       </div>
     </>
   );
