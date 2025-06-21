@@ -82,7 +82,7 @@ const ExpenseSummaryCharts = ({ summary }) => {
           />
         </div>
         {pieData && (
-          <div style={{ width: 520, height: 520, background: '#fff', padding: 12, borderRadius: 8, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+          <div style={{ width: 520, height: 280, background: '#fff', padding: 12, borderRadius: 8, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
             <h4 style={{ textAlign: 'center', margin: 0 }}>{pieData.month} Category Breakdown</h4>
             <Pie
               data={pieData.pie}
@@ -94,8 +94,8 @@ const ExpenseSummaryCharts = ({ summary }) => {
                 responsive: false,
                 maintainAspectRatio: false,
               }}
-              width={260}
-              height={220}
+              width={250}
+              height={180}
             />
           </div>
         )}
