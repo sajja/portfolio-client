@@ -27,6 +27,11 @@ const ExpenseSummaryCharts = ({ summary }) => {
     if (elements && elements.length > 0) {
       const chart = elements[0];
       const month = totalChartData.labels[chart.index];
+      // Toggle pie chart: hide if same month is clicked again
+      if (pieData && pieData.month === month) {
+        setPieData(null);
+        return;
+      }
       const monthData = summary[month];
       if (monthData && monthData.categories) {
         const cats = Object.entries(monthData.categories);
