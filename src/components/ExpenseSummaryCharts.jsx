@@ -5,6 +5,7 @@ Chart.register(...registerables);
 
 const ExpenseSummaryCharts = ({ summary }) => {
   const [pieData, setPieData] = useState(null);
+  const [subcatTable, setSubcatTable] = useState(null);
   if (!summary) return null;
 
   // Get months in reverse order
@@ -30,23 +31,49 @@ const ExpenseSummaryCharts = ({ summary }) => {
       // Toggle pie chart: hide if same month is clicked again
       if (pieData && pieData.month === month) {
         setPieData(null);
+        setSubcatTable(null); // Hide subcat table when changing month
         return;
       }
       const monthData = summary[month];
       if (monthData && monthData.categories) {
-        const cats = Object.entries(monthData.categories);
+        // New structure: categories is an object with {total, subcategories}
+        let cats = Object.entries(monthData.categories)
+          .map(([cat, val]) => ({ cat, total: val.total ?? 0 }))
+          .sort((a, b) => b.total - a.total);
+        // Show only top 10 categories
+        cats = cats.slice(0, 10);
         const pie = {
-          labels: cats.map(([cat]) => cat),
+          labels: cats.map(c => c.cat),
           datasets: [
             {
-              data: cats.map(([, val]) => val),
+              data: cats.map(c => c.total),
               backgroundColor: cats.map((_, i) => `hsl(${(i * 47) % 360}, 60%, 60%)`),
             },
           ],
         };
         setPieData({ pie, month });
+        setSubcatTable(null); // Hide subcat table when changing month
       } else {
         setPieData(null);
+        setSubcatTable(null);
+      }
+    }
+  };
+
+  // Pie chart click handler
+  const handlePieClick = (event, elements) => {
+    if (elements && elements.length > 0 && pieData) {
+      const chart = elements[0];
+      const cat = pieData.pie.labels[chart.index];
+      const monthData = summary[pieData.month];
+      if (monthData && monthData.categories && monthData.categories[cat] && monthData.categories[cat].subcategories) {
+        const subcats = Object.entries(monthData.categories[cat].subcategories);
+        setSubcatTable({
+          cat,
+          rows: subcats.map(([subcat, value]) => ({ subcat, value })),
+        });
+      } else {
+        setSubcatTable({ cat, rows: [] });
       }
     }
   };
@@ -98,10 +125,32 @@ const ExpenseSummaryCharts = ({ summary }) => {
                 },
                 responsive: false,
                 maintainAspectRatio: false,
+                onClick: handlePieClick,
               }}
               width={250}
               height={180}
             />
+          </div>
+        )}
+        {subcatTable && (
+          <div style={{ width: 320, height: 280, background: '#fff', padding: 12, borderRadius: 8, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
+            <h4 style={{ textAlign: 'center', margin: 0, width: '100%' }}>Subcategory Breakdown</h4>
+            <table style={{ width: '100%', marginTop: 12, borderCollapse: 'collapse' }}>
+              <thead>
+                <tr style={{ background: '#f5f5f5' }}>
+                  <th style={{ textAlign: 'left', padding: '4px 8px' }}>Subcategory</th>
+                  <th style={{ textAlign: 'right', padding: '4px 8px' }}>Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {subcatTable.rows.map((row, i) => (
+                  <tr key={i}>
+                    <td style={{ padding: '4px 8px' }}>{row.subcat}</td>
+                    <td style={{ padding: '4px 8px', textAlign: 'right' }}>{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         )}
       </div>
