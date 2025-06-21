@@ -68,9 +68,13 @@ const ExpenseSummaryCharts = ({ summary }) => {
       const monthData = summary[pieData.month];
       if (monthData && monthData.categories && monthData.categories[cat] && monthData.categories[cat].subcategories) {
         const subcats = Object.entries(monthData.categories[cat].subcategories);
+        const catTotal = monthData.categories[cat].total ?? 0;
         setSubcatTable({
           cat,
-          rows: subcats.map(([subcat, value]) => ({ subcat, value })),
+          rows: subcats.map(([subcat, value]) => ({
+            subcat,
+            value: catTotal > 0 ? ((value / catTotal) * 100).toFixed(1) + '%' : '0%'
+          })),
         });
       } else {
         setSubcatTable({ cat, rows: [] });
