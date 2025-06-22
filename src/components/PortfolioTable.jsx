@@ -122,8 +122,9 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
             boxSizing: 'border-box',
             overflow: 'auto',
             height: '60px',
+            background: '#f7fafd', // lighter background
           }}
-          value={row.comment || ''}
+          value={row.comment|| ''}
           onChange={e => onCommentChange(idx, e.target.value)}
         />
       ),
@@ -135,7 +136,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
       cell: (row) => (
         <textarea
           rows={6} // Increased from 4 to 6
-          placeholder="No notes"
+          placeholder="No note`s"
           style={{
             width: `${Math.max(colWidths.notes - 20, 350)}px`, // Wider textarea
             minWidth: '350px', // Increased min width
@@ -147,6 +148,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
             fontSize: '1.1em',
             fontWeight: 'bold',
             color: '#333',
+            background: '#f7fafd', // lighter background
           }}
           value={row.notes || ''}
           readOnly
@@ -168,7 +170,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
             onClick={async () => {
               try {
                 const response = await fetch(
-                  `http://localhost:3000/api/v1/portfolio/equity/${encodeURIComponent(row.name)}`,
+                  `http://localhost:3000/api/v1/portfolio/equity/${encodeURIComponent(row.symbol)}`,
                   {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
