@@ -121,7 +121,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
             resize: 'both',
             boxSizing: 'border-box',
             overflow: 'auto',
-            height: '60px',
+            height: '30px',
             background: '#f7fafd', // lighter background
           }}
           value={row.comment|| ''}
@@ -135,27 +135,27 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
       name: <span style={{ fontSize: '1.15em', fontWeight: 'bold', letterSpacing: '1px' }}>NOTES</span>,
       cell: (row) => (
         <textarea
-          rows={6} // Increased from 4 to 6
+          rows={6}
           placeholder="No note`s"
           style={{
-            width: `${Math.max(colWidths.notes - 20, 350)}px`, // Wider textarea
-            minWidth: '350px', // Increased min width
-            maxWidth: '100%',
-            resize: 'both',
+            width: '260px', // Larger width
+            minWidth: '220px',
+            maxWidth: '340px',
+            resize: 'vertical',
             boxSizing: 'border-box',
             overflow: 'auto',
-            height: '100px', // Increased height
+            height: '30px',
             fontSize: '1.1em',
             fontWeight: 'bold',
             color: '#333',
-            background: '#f7fafd', // lighter background
+            background: '#f7fafd',
           }}
           value={row.notes || ''}
           readOnly
         />
       ),
       ignoreRowClick: true,
-      width: `${colWidths.notes + 50}px`, // Make the column itself wider
+      width: '300px', // Larger column width
     },
     {
       name: '', // Empty header for save and delete
@@ -200,7 +200,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
   ];
 
   return (
-    <div className="portfolio-table-container">
+    <div className="portfolio-table-container" style={{ maxHeight: '700px', overflowY: 'auto' }}>
       <DataTableExtensions columns={columns} data={rows}>
         <DataTable
           dense
