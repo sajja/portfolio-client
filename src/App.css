@@ -40,3 +40,61 @@
 .read-the-docs {
   color: #888;
 }
+
+.expense-report-container {
+  padding: 32px;
+  color: #b82424;
+  width: 100%;
+  min-height: 100vh;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.expense-report-title {
+  margin-bottom: 0.5em;
+}
+
+.expense-tabs {
+  display: flex;
+  border-bottom: 2px solid #1976d2;
+  margin-bottom: 24px;
+}
+
+.expense-tab-btn {
+  background: transparent;
+  color: #1976d2;
+  border: none;
+  border-bottom: none;
+  font-weight: 600;
+  font-size: 18px;
+  padding: 10px 28px;
+  cursor: pointer;
+  outline: none;
+  transition: background 0.2s;
+}
+
+.expense-tab-btn.active {
+  background: #1976d2;
+  color: #fff;
+  border-bottom: 2px solid #1976d2;
+}
+
+.expense-tab-content {
+  margin-top: 24px;
+}
+
+.subcategory-breakdown-container {
+  color: #000;
+}
+
+.subcategory-breakdown-table,
+.subcategory-breakdown-table th,
+.subcategory-breakdown-table td {
+  color: #000;
+}
+
+.transactions-table,
+.transactions-table th,
+.transactions-table td {
+  color: #000;
+}
