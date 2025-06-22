@@ -68,11 +68,19 @@ const ExpenseReport = () => {
               <thead>
                 <tr>
                   <th className="raw-data-nav">{'<'}</th>
-                  <th className="raw-data-title">Year: Month</th>
+                  <th className="raw-data-title">{
+  (() => {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.toLocaleString('default', { month: 'long' });
+    return `${year}: ${month}`;
+  })()
+}</th>
                   <th className="raw-data-nav">{'>'}</th>
                 </tr>
               </thead>
-            </table>
+            <tr>
+              <td colSpan="3">
             <table className="raw-data-table">
               <thead>
                 <tr>
@@ -121,7 +129,11 @@ const ExpenseReport = () => {
                 </tr>
               </tbody>
             </table>
-          </div>
+ 
+              </td>
+            </tr>
+            </table>
+         </div>
         )}
       </div>
     </div>
