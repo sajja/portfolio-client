@@ -15,6 +15,14 @@
   background-color: #f6f6f6 !important;
 }
 
+/* Lower row height for Equity - Current table */
+.portfolio-table-container .rdt_TableRow {
+  min-height: 24px !important;
+  height: 48px !important;
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
 .resizable-header {
   display: flex;
   align-items: center;
