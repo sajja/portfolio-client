@@ -91,6 +91,7 @@ const ExpenseReport = () => {
 const SlidingPane = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [mainContent, setMainContent] = useState('Main area');
+  const [companyAnnouncements, setCompanyAnnouncements] = useState(null);
 
   const handleTogglePane = () => setIsOpen((open) => !open);
 
@@ -109,6 +110,62 @@ const SlidingPane = () => {
     setMainContent(<ExpenseReport />);
   };
 
+  const handleCompanyAnnouncementsClick = async (e) => {
+    e.preventDefault();
+    // Simulate fetching data for demo; replace with real API call as needed
+    // Example data
+    const myCompanies = [
+      { name: 'Alpha Corp', announcement: 'Dividend declared for Q2.' },
+      { name: 'Beta Ltd', announcement: 'AGM scheduled for July 10.' },
+    ];
+    const otherCompanies = [
+      { name: 'Gamma Inc', announcement: 'New product launch next month.' },
+      { name: 'Delta PLC', announcement: 'Rights issue announced.' },
+    ];
+    setCompanyAnnouncements({ myCompanies, otherCompanies });
+    setMainContent(
+      <div className="company-announcements-table">
+        <h2>Company Announcements</h2>
+        <div>
+          <div style={{ flex: 1, marginBottom: 32 }}>
+            <h3>Companies I Own</h3>
+            <table className="styled-table">
+              <thead>
+                <tr><th>Company</th><th>Announcement</th></tr>
+              </thead>
+              <tbody>
+                {myCompanies.length === 0 ? (
+                  <tr><td colSpan={2} style={{ textAlign: 'center', color: '#888' }}>No announcements</td></tr>
+                ) : (
+                  myCompanies.map((c, i) => (
+                    <tr key={i}><td>{c.name}</td><td>{c.announcement}</td></tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+          <div style={{ flex: 1 }}>
+            <h3>All Other Companies</h3>
+            <table className="styled-table">
+              <thead>
+                <tr><th>Company</th><th>Announcement</th></tr>
+              </thead>
+              <tbody>
+                {otherCompanies.length === 0 ? (
+                  <tr><td colSpan={2} style={{ textAlign: 'center', color: '#888' }}>No announcements</td></tr>
+                ) : (
+                  otherCompanies.map((c, i) => (
+                    <tr key={i}><td>{c.name}</td><td>{c.announcement}</td></tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
   return (
     <div className="container" >
       <button className="toggle-btn" onClick={handleTogglePane}>
@@ -124,7 +181,7 @@ const SlidingPane = () => {
             <a id="ci" href="" >Company info</a>
           </div>
           <div>
-            <a id="ann" href="">Company announcements</a>
+            <a id="ann" href="" onClick={handleCompanyAnnouncementsClick}>Company announcements</a>
           </div>
           <div>
             <a id="expI" href="" onClick={handleExpenseClick}>Expense import</a>

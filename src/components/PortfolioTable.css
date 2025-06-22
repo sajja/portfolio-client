@@ -44,8 +44,3 @@
   overflow: auto;
   height: 60px;
 }
-
-import EquityTransactionSummaryTable from './EquityTransactionSummaryTable';
-
-// Example usage in EditableTable.jsx or another parent component:
-<EquityTransactionSummaryTable data={summaryRows} />

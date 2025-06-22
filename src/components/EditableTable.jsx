@@ -54,8 +54,9 @@ const EditableTable = () => {
     // Fetch notes (dividend remarks)
     let notesMap = {};
     try {
-      const notesRes = await fetch(`${API_BASE}/companies/divident?own=true`);
+      const notesRes = await fetch(`${API_BASE}/companies/dividend?own=true`);
       const notesJson = await notesRes.json();
+      console.log('Notes JSON:', notesJson); // <-- Print notes JSON to console
       // For each symbol, concatenate all non-null remarks for that symbol
       notesMap = (notesJson.dividends || []).reduce((acc, div) => {
         if (div.remarks) {
@@ -69,12 +70,13 @@ const EditableTable = () => {
       // If notes fetch fails, just skip notes
       notesMap = {};
     }
-
+    console.log('Notes map:', notesMap); // <-- Print notes map to console
     // Merge notes into portfolio rows
     const mergedRows = stocks.map(row => ({
       ...row,
-      notes: notesMap[row.name] || '', // row.name is the stock symbol
+      notes: notesMap[row.symbol] || '', // row.name is the stock symbol
     }));
+    console.log('Merged rows:', mergedRows); // <-- Print merged rows to console
 
     setRows(mergedRows);
   };
