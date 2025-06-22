@@ -37,31 +37,20 @@ const ExpenseReport = () => {
   }, [activeTab, summary, loading]);
 
   return (
-    <div style={{ padding: 32, color: '#000', width: '100vw', height: '100vh', background: '#fff', boxSizing: 'border-box' }}>
-      <h2>Expense Report</h2>
-      <div style={{ display: 'flex', borderBottom: '2px solid #1976d2', marginBottom: 24 }}>
+    <div className="expense-report-container">
+      <h2 className="expense-report-title">Expense Report</h2>
+      <div className="expense-tabs">
         {tabs.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
-            style={{
-              background: activeTab === tab.key ? '#1976d2' : 'transparent',
-              color: activeTab === tab.key ? '#fff' : '#1976d2',
-              border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #1976d2' : 'none',
-              fontWeight: 600,
-              fontSize: 18,
-              padding: '10px 28px',
-              cursor: 'pointer',
-              outline: 'none',
-              transition: 'background 0.2s',
-            }}
+            className={`expense-tab-btn${activeTab === tab.key ? ' active' : ''}`}
           >
             {tab.label}
           </button>
         ))}
       </div>
-      <div style={{ marginTop: 24 }}>
+      <div className="expense-tab-content">
         {activeTab === 'Summary' && (
           loading ? <div>Loading summary...</div> :
           error ? <div style={{color: 'red'}}>{error}</div> :
@@ -73,7 +62,67 @@ const ExpenseReport = () => {
         )}
         {activeTab === 'ByCategory' && <div>By Category report coming soon...</div>}
         {activeTab === 'ByMonth' && <div>By Month report coming soon...</div>}
-        {activeTab === 'Raw' && <div>Raw Data report coming soon...</div>}
+        {activeTab === 'Raw' && (
+          <div className="raw-data-tab">
+            <table className="raw-data-header-table">
+              <thead>
+                <tr>
+                  <th className="raw-data-nav">{'<'}</th>
+                  <th className="raw-data-title">Year: Month</th>
+                  <th className="raw-data-nav">{'>'}</th>
+                </tr>
+              </thead>
+            </table>
+            <table className="raw-data-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Category</th>
+                  <th>Subcategory</th>
+                  <th>Description</th>
+                  <th>Amount</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>2025-01-03</td>
+                  <td>charity</td>
+                  <td>sos</td>
+                  <td>Repeating:sos</td>
+                  <td>₹15000</td>
+                </tr>
+                <tr>
+                  <td>2025-01-04</td>
+                  <td>Household</td>
+                  <td>Appliance</td>
+                  <td>Repeating:fridge</td>
+                  <td>₹16400</td>
+                </tr>
+                <tr>
+                  <td>2025-01-09</td>
+                  <td>Personal</td>
+                  <td>education</td>
+                  <td>Repeating:audible - Stopped</td>
+                  <td>₹4000</td>
+                </tr>
+                <tr>
+                  <td>2025-01-14</td>
+                  <td>investment</td>
+                  <td>pension</td>
+                  <td>Repeating:pension</td>
+                  <td>₹7000</td>
+                </tr>
+                <tr>
+                  <td>2025-01-28</td>
+                  <td>Loans</td>
+                  <td>Mortgage</td>
+                  <td>Repeating:housing loan</td>
+                  <td>₹50000</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
       </div>
     </div>
   );
