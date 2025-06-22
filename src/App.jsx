@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './SlidingPane.css'; // Import CSS for styling
 import EditableTable from './components/EditableTable';
-import ExpenseTable from './components/ExpenseTable';
+import ExpenseImport from './components/ExpenseImport';
 import ExpenseSummaryCharts from './components/ExpenseSummaryCharts';
 
 // Expense Report with tab view
@@ -225,7 +225,7 @@ const SlidingPane = () => {
 
   const handleExpenseClick = (e) => {
     e.preventDefault();
-    setMainContent(<ExpenseTable />);
+    setMainContent(<ExpenseImport />);
   };
 
   const handleExpenseReportClick = (e) => {
