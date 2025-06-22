@@ -16,6 +16,7 @@ const ExpenseReport = () => {
   const [rawYear, setRawYear] = useState(new Date().getFullYear());
   const [rawMonth, setRawMonth] = useState(new Date().getMonth() + 1); // 1-based
   const [rawPage, setRawPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(true);
   const tabs = [
     { key: 'Summary', label: 'Summary' },
     { key: 'ByCategory', label: 'By Category' },
@@ -53,9 +54,11 @@ const ExpenseReport = () => {
         })
         .then(data => {
           setRawExpenses(data.expenses || []);
+          setHasNextPage(Array.isArray(data.expenses) && data.expenses.length > 0);
         })
         .catch(err => {
           setRawError(err.message || 'Error loading raw expenses');
+          setHasNextPage(false);
         })
         .finally(() => setRawLoading(false));
     }
@@ -170,16 +173,32 @@ const ExpenseReport = () => {
                               )}
                             </tbody>
                           </table>
-                          <div className="raw-data-pagination" style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'center', marginTop: 8 }}>
-                            <span style={{ color: '#222', fontWeight: 500 }}>Page {rawPage}</span>
-                            <button
-                              className="raw-data-next-btn"
-                              style={{ marginLeft: 16, padding: '4px 16px', borderRadius: 4, border: '1px solid #ccc', background: '#f5f7fa', color: '#222', fontWeight: 500, cursor: 'pointer' }}
-                              onClick={() => setRawPage(p => p + 1)}
-                              disabled={rawLoading}
-                            >
-                              Next Page &gt;
-                            </button>
+                          <div className="raw-data-pagination" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: 8 }}>
+                            <div>
+                              {rawPage > 1 && (
+                                <button
+                                  className="raw-data-prev-btn"
+                                  style={{ padding: '4px 16px', borderRadius: 4, border: '1px solid #ccc', background: '#f5f7fa', color: '#222', fontWeight: 500, cursor: 'pointer' }}
+                                  onClick={() => setRawPage(p => Math.max(1, p - 1))}
+                                  disabled={rawLoading}
+                                >
+                                  &lt; Previous Page
+                                </button>
+                              )}
+                            </div>
+                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                              <span style={{ color: '#222', fontWeight: 500 }}>Page {rawPage}</span>
+                              {hasNextPage && (
+                                <button
+                                  className="raw-data-next-btn"
+                                  style={{ marginLeft: 16, padding: '4px 16px', borderRadius: 4, border: '1px solid #ccc', background: '#f5f7fa', color: '#222', fontWeight: 500, cursor: 'pointer' }}
+                                  onClick={() => setRawPage(p => p + 1)}
+                                  disabled={rawLoading}
+                                >
+                                  Next Page &gt;
+                                </button>
+                              )}
+                            </div>
                           </div>
                         </>
                       )}
