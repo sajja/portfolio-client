@@ -20,7 +20,6 @@ const ExpenseReport = () => {
   const tabs = [
     { key: 'Summary', label: 'Summary' },
     { key: 'ByCategory', label: 'By Category' },
-    { key: 'ByMonth', label: 'By Month' },
     { key: 'Raw', label: 'Raw Data' },
   ];
 
@@ -119,7 +118,6 @@ const ExpenseReport = () => {
           ) : <div>No summary data.</div>
         )}
         {activeTab === 'ByCategory' && <div>By Category report coming soon...</div>}
-        {activeTab === 'ByMonth' && <div>By Month report coming soon...</div>}
         {activeTab === 'Raw' && (
           <div className="raw-data-tab">
             <table className="raw-data-header-table">
