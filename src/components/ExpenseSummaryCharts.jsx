@@ -179,55 +179,53 @@ const ExpenseSummaryCharts = ({ summary }) => {
           </div>
         )}
         {subcatTable && (
-          <div style={{ width: 320, height: selectedSubcat ? 420 : 280, background: '#fff', padding: 12, borderRadius: 8, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start' }}>
-            <h4 style={{ textAlign: 'center', margin: 0, width: '100%' }}>Subcategory Breakdown</h4>
-            <table style={{ width: '100%', marginTop: 12, borderCollapse: 'collapse' }}>
+          <div className="subcategory-breakdown-container" style={{ width: 320, height: selectedSubcat ? 420 : 280, background: '#fff', padding: 12, borderRadius: 8, boxShadow: '0 2px 8px #eee', display: 'flex', flexDirection: 'column', alignItems: 'flex-start', justifyContent: 'flex-start', color: '#000' }}>
+            <h4 style={{ textAlign: 'center', margin: 0, width: '100%', color: '#000' }}>Subcategory Breakdown</h4>
+            <table className="subcategory-breakdown-table" style={{ width: '100%', marginTop: 12, borderCollapse: 'collapse', color: '#000' }}>
               <thead>
-                <tr style={{ background: '#f5f5f5' }}>
-                  <th style={{ textAlign: 'left', padding: '4px 8px' }}>Subcategory</th>
-                  <th style={{ textAlign: 'right', padding: '4px 8px' }}>Value</th>
+                <tr style={{ background: '#f5f5f5', color: '#000' }}>
+                  <th style={{ textAlign: 'left', padding: '4px 8px', color: '#000' }}>Subcategory</th>
+                  <th style={{ textAlign: 'right', padding: '4px 8px', color: '#000' }}>Value</th>
                 </tr>
               </thead>
               <tbody>
                 {subcatTable.rows.map((row, i) => (
-                  <tr key={i} style={{ cursor: 'pointer', background: selectedSubcat === row.subcat ? '#e3f2fd' : undefined }} onClick={() => handleSubcatClick(row.subcat)}>
-                    <td style={{ padding: '4px 8px' }}>{row.subcat}</td>
-                    <td style={{ padding: '4px 8px', textAlign: 'right' }}>{row.value}</td>
+                  <tr key={i} style={{ cursor: 'pointer', background: selectedSubcat === row.subcat ? '#e3f2fd' : undefined, color: '#000' }} onClick={() => handleSubcatClick(row.subcat)}>
+                    <td style={{ padding: '4px 8px', color: '#000' }}>{row.subcat}</td>
+                    <td style={{ padding: '4px 8px', textAlign: 'right', color: '#000' }}>{row.value}</td>
                   </tr>
                 ))}
               </tbody>
             </table>
             {selectedSubcat && (
-              <div style={{ marginTop: 18, width: '100%' }}>
-                <h5 style={{ margin: '0 0 8px 0', textAlign: 'center' }}>Transactions for <span style={{ color: '#1976d2' }}>{selectedSubcat}</span></h5>
-                {loadingSubcat ? (
-                  <div style={{ textAlign: 'center', color: '#888', margin: '12px 0' }}>Loading...</div>
-                ) : subcatError ? (
-                  <div style={{ color: 'red', textAlign: 'center', margin: '12px 0' }}>{subcatError}</div>
-                ) : (
-                  <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13 }}>
-                    <thead>
-                      <tr style={{ background: '#f5f5f5' }}>
-                        <th style={{ textAlign: 'left', padding: '3px 6px' }}>Date</th>
-                        <th style={{ textAlign: 'left', padding: '3px 6px' }}>Description</th>
-                        <th style={{ textAlign: 'right', padding: '3px 6px' }}>Amount</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {subcatTransactions.length === 0 ? (
-                        <tr><td colSpan={3} style={{ textAlign: 'center', color: '#888', padding: 8 }}>No transactions found.</td></tr>
-                      ) : (
-                        subcatTransactions.map(txn => (
-                          <tr key={txn.id}>
-                            <td style={{ padding: '3px 6px' }}>{txn.date}</td>
-                            <td style={{ padding: '3px 6px' }}>{txn.description}</td>
-                            <td style={{ padding: '3px 6px', textAlign: 'right' }}>₹{txn.amount}</td>
-                          </tr>
-                        ))
-                      )}
-                    </tbody>
-                  </table>
-                )}
+              <div style={{ marginTop: 18, width: '100%', color: '#000' }}>
+                <h5 style={{ margin: '0 0 8px 0', textAlign: 'center', color: '#000' }}>Transactions for <span style={{ color: '#1976d2' }}>{selectedSubcat}</span></h5>
+                <table className="transactions-table" style={{ width: '100%', borderCollapse: 'collapse', fontSize: 13, color: '#000' }}>
+                  <thead>
+                    <tr style={{ background: '#f5f5f5', color: '#000' }}>
+                      <th style={{ textAlign: 'left', padding: '3px 6px', color: '#000' }}>Date</th>
+                      <th style={{ textAlign: 'left', padding: '3px 6px', color: '#000' }}>Description</th>
+                      <th style={{ textAlign: 'right', padding: '3px 6px', color: '#000' }}>Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {loadingSubcat ? (
+                      <tr><td colSpan={3} style={{ textAlign: 'center', color: '#888', padding: 8 }}>Loading...</td></tr>
+                    ) : subcatError ? (
+                      <tr><td colSpan={3} style={{ color: 'red', textAlign: 'center', padding: 8 }}>{subcatError}</td></tr>
+                    ) : subcatTransactions.length === 0 ? (
+                      <tr><td colSpan={3} style={{ textAlign: 'center', color: '#888', padding: 8 }}>No transactions found.</td></tr>
+                    ) : (
+                      subcatTransactions.map(txn => (
+                        <tr key={txn.id} style={{ color: '#000' }}>
+                          <td style={{ padding: '3px 6px', color: '#000' }}>{txn.date}</td>
+                          <td style={{ padding: '3px 6px', color: '#000' }}>{txn.description}</td>
+                          <td style={{ padding: '3px 6px', textAlign: 'right', color: '#000' }}>₹{txn.amount}</td>
+                        </tr>
+                      ))
+                    )}
+                  </tbody>
+                </table>
               </div>
             )}
           </div>
