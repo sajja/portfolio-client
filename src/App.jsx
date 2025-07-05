@@ -4,7 +4,8 @@ import EditableTable from './components/EditableTable';
 import ExpenseImport from './components/ExpenseImport';
 import ExpenseSummaryCharts from './components/ExpenseSummaryCharts';
 import ExpenseRawData from './components/ExpenseRawData';
-import CompanyAnnouncements from './components/CompanyAnnouncements'; // Import the new CompanyAnnouncements component
+import CompanyAnnouncements from './components/CompanyAnnouncements'; 
+import ExpenseAdmin from './components/ExpenseAdmin'; // Import the new ExpenseAdmin component
 
 // Expense Report with tab view
 const ExpenseReport = () => {
@@ -114,6 +115,11 @@ const SlidingPane = () => {
     e.preventDefault();
     setMainContent(<CompanyAnnouncements />);
   };
+  
+  const handleExpenseAdminClick = (e) => {
+    e.preventDefault();
+    setMainContent(<ExpenseAdmin />);
+  };
 
   return (
     <div className="container" >
@@ -138,7 +144,9 @@ const SlidingPane = () => {
           <div>
             <a id="expR" href="" onClick={handleExpenseReportClick}>Expense Report</a>
           </div>
-          <div>E</div>
+          <div>
+            <a id="expA" href="" onClick={handleExpenseAdminClick}> Expense Admin</a>
+          </div>
           <div>F</div>
           <div>G</div>
         </div>
