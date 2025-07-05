@@ -19,17 +19,19 @@ const initialWidths = {
 const customStyles = {
   table: {
     style: {
-      width: '80vw',
-      minHeight: '40vh',
-      height: '60vh',
+      width: '100%',
       background: '#fff',
     },
   },
   responsiveWrapper: {
     style: {
-      width: '80vw',
-      minHeight: '40vh',
-      height: '60vh',
+      width: '100%',
+      overflowX: 'visible',
+    },
+  },
+  tableWrapper: {
+    style: {
+      overflowX: 'visible',
     },
   },
   rows: {
@@ -43,6 +45,7 @@ const customStyles = {
       backgroundColor: '#888',
     },
   },
+  
   headCells: {
     style: {
       backgroundColor: '#888',
@@ -200,7 +203,7 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
   ];
 
   return (
-    <div className="portfolio-table-container" style={{ maxHeight: '700px', overflowY: 'auto' }}>
+    <div className="portfolio-table-container">
       <DataTableExtensions columns={columns} data={rows}>
         <DataTable
           dense
@@ -209,6 +212,10 @@ const PortfolioTable = ({ rows, onShowTransactions, onCommentChange, onNotesChan
           noHeader
           pagination={false}
           customStyles={customStyles}
+          fixedHeader
+          fixedHeaderScrollHeight="600px"
+          overflowX="visible"
+          overflowY="auto"
         />
       </DataTableExtensions>
     </div>
