@@ -10,6 +10,9 @@ const ExpenseAdmin = () => {
   const [importedMonths, setImportedMonths] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [showConfirm, setShowConfirm] = useState(false);
+  const [toDelete, setToDelete] = useState(null);
+  const [toastMsg, setToastMsg] = useState('');
 
   useEffect(() => {
     fetch('http://localhost:3000/api/v1/expense/admin/summary')
@@ -24,6 +27,37 @@ const ExpenseAdmin = () => {
       .catch(err => setError(err.message || 'Error loading imported months'))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleDeleteClick = (year, month) => {
+    setToDelete({ year, month });
+    setShowConfirm(true);
+  };
+
+  const handleConfirmDelete = async () => {
+    if (!toDelete) return;
+    setShowConfirm(false);
+    setToastMsg('Deleting...');
+    try {
+      const res = await fetch('http://localhost:3000/api/v1/expense/admin', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ year: toDelete.year, month: toDelete.month })
+      });
+      if (!res.ok) throw new Error('Failed to delete imported data');
+      setToastMsg('Deleted successfully!');
+      setImportedMonths(prev => prev.filter(m => !(m.year === toDelete.year && m.month === toDelete.month)));
+    } catch (err) {
+      setToastMsg('Delete failed: ' + (err.message || 'Unknown error'));
+    } finally {
+      setTimeout(() => setToastMsg(''), 2500);
+      setToDelete(null);
+    }
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirm(false);
+    setToDelete(null);
+  };
 
   return (
     <div className="expense-table-root">
@@ -49,13 +83,54 @@ const ExpenseAdmin = () => {
                 <tr key={year + '-' + month}>
                   <td>{year}</td>
                   <td>{monthNames[month]}</td>
-                  <td><button className="import-btn" style={{padding: '4px 16px'}}>Delete</button></td>
+                  <td>
+                    <button className="import-btn" style={{padding: '4px 16px'}} onClick={() => handleDeleteClick(year, month)}>
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))
             )}
           </tbody>
         </table>
       </div>
+      {/* Confirmation Toast */}
+      {showConfirm && (
+        <div style={{
+          position: 'fixed',
+          bottom: 40,
+          right: 40,
+          background: '#fff',
+          color: '#222',
+          padding: '18px 32px',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px #888',
+          zIndex: 9999,
+          fontSize: 17,
+          fontWeight: 500,
+          border: '1.5px solid #1976d2',
+        }}>
+          <div style={{marginBottom: 12}}>Delete data for {toDelete?.year} {monthNames[toDelete?.month]}?</div>
+          <button className="import-btn" style={{marginRight: 16}} onClick={handleConfirmDelete}>Yes, Delete</button>
+          <button className="import-btn" style={{background:'#eee', color:'#222'}} onClick={handleCancelDelete}>Cancel</button>
+        </div>
+      )}
+      {/* Status Toast */}
+      {toastMsg && (
+        <div style={{
+          position: 'fixed',
+          bottom: 32,
+          right: 32,
+          background: '#1976d2',
+          color: '#fff',
+          padding: '16px 32px',
+          borderRadius: 8,
+          boxShadow: '0 2px 8px #888',
+          zIndex: 9999,
+          fontSize: 17,
+          fontWeight: 500,
+        }}>{toastMsg}</div>
+      )}
     </div>
   );
 };
