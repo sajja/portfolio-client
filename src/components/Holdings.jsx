@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import './holdings.css';
 
 const Holdings = ({ onBack }) => {
   const [holdings, setHoldings] = useState([]);
