@@ -174,6 +174,19 @@ const Holdings = ({ onBack }) => {
             {formatCurrency(totalGainLoss)} ({formatPercent(totalGainLossPercent)})
           </p>
         </div>
+        <div className="summary-card action-card">
+          <h3>Quick Actions</h3>
+          <div className="action-buttons">
+            <button className="action-btn buy-btn" onClick={() => console.log('Buy clicked')}>
+              <span className="btn-icon">+</span>
+              Buy Stock
+            </button>
+            <button className="action-btn sell-btn" onClick={() => console.log('Sell clicked')}>
+              <span className="btn-icon">−</span>
+              Sell Stock
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="holdings-table-container">
