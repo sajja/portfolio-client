@@ -11,50 +11,50 @@ const Holdings = ({ onBack }) => {
   const [showSellModal, setShowSellModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        
-        // Fetch holdings and profit summary in parallel
-        const [holdingsResponse, summaryResponse] = await Promise.all([
-          fetch('http://localhost:3000/api/v1/portfolio/equity'),
-          fetch('http://localhost:3000/api/v1/portfolio/summary')
-        ]);
-        
-        if (!holdingsResponse.ok || !summaryResponse.ok) {
-          throw new Error(`HTTP error! Holdings: ${holdingsResponse.status}, Summary: ${summaryResponse.status}`);
-        }
-        
-        const [holdingsData, summaryData] = await Promise.all([
-          holdingsResponse.json(),
-          summaryResponse.json()
-        ]);
-        
-        // Transform holdings data
-        const transformedHoldings = holdingsData.stocks.map((stock, index) => ({
-          id: index + 1,
-          symbol: stock.symbol,
-          shares: stock.qtty,
-          avgPrice: stock.avg_price,
-          currentPrice: stock.lastTradedPrice,
-          marketValue: stock.qtty * stock.lastTradedPrice,
-          gainLoss: (stock.lastTradedPrice - stock.avg_price) * stock.qtty,
-          gainLossPercent: ((stock.lastTradedPrice - stock.avg_price) / stock.avg_price) * 100,
-          date: stock.date,
-          comment: stock.comment
-        }));
-        
-        setHoldings(transformedHoldings);
-        setProfitSummary(summaryData.equity);
-      } catch (err) {
-        setError(err.message);
-        console.error('Error fetching data:', err);
-      } finally {
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      setLoading(true);
+      
+      // Fetch holdings and profit summary in parallel
+      const [holdingsResponse, summaryResponse] = await Promise.all([
+        fetch('http://localhost:3000/api/v1/portfolio/equity'),
+        fetch('http://localhost:3000/api/v1/portfolio/summary')
+      ]);
+      
+      if (!holdingsResponse.ok || !summaryResponse.ok) {
+        throw new Error(`HTTP error! Holdings: ${holdingsResponse.status}, Summary: ${summaryResponse.status}`);
       }
-    };
+      
+      const [holdingsData, summaryData] = await Promise.all([
+        holdingsResponse.json(),
+        summaryResponse.json()
+      ]);
+      
+      // Transform holdings data
+      const transformedHoldings = holdingsData.stocks.map((stock, index) => ({
+        id: index + 1,
+        symbol: stock.symbol,
+        shares: stock.qtty,
+        avgPrice: stock.avg_price,
+        currentPrice: stock.lastTradedPrice,
+        marketValue: stock.qtty * stock.lastTradedPrice,
+        gainLoss: (stock.lastTradedPrice - stock.avg_price) * stock.qtty,
+        gainLossPercent: ((stock.lastTradedPrice - stock.avg_price) / stock.avg_price) * 100,
+        date: stock.date,
+        comment: stock.comment
+      }));
+      
+      setHoldings(transformedHoldings);
+      setProfitSummary(summaryData.equity);
+    } catch (err) {
+      setError(err.message);
+      console.error('Error fetching data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, []);
 
@@ -72,16 +72,22 @@ const Holdings = ({ onBack }) => {
     setShowSellModal(true);
   };
 
-  const handleSellModalClose = () => {
+  const handleSellModalClose = (shouldRefetch) => {
     setShowSellModal(false);
+    if (shouldRefetch) {
+      fetchData();
+    }
   };
 
   const handleBuyClick = () => {
     setShowBuyModal(true);
   };
 
-  const handleBuyModalClose = () => {
+  const handleBuyModalClose = (shouldRefetch) => {
     setShowBuyModal(false);
+    if (shouldRefetch) {
+      fetchData();
+    }
   };
 
   // Get profit data from API or use defaults

@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import './modal.css';
 
 const SellModal = ({ isOpen, onClose, holdings }) => {
@@ -15,49 +16,65 @@ const SellModal = ({ isOpen, onClose, holdings }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const selectedHolding = holdings.find(h => h.symbol === sellForm.selectedStock);
     
     if (!selectedHolding) {
-      alert('Please select a stock to sell');
+      toast.error('Please select a stock to sell');
       return;
     }
     
     if (!sellForm.quantity || sellForm.quantity <= 0) {
-      alert('Please enter a valid quantity');
+      toast.error('Please enter a valid quantity');
       return;
     }
     
     if (parseFloat(sellForm.quantity) > selectedHolding.shares) {
-      alert(`You can only sell up to ${selectedHolding.shares} shares of ${selectedHolding.symbol}`);
+      toast.error(`You can only sell up to ${selectedHolding.shares} shares of ${selectedHolding.symbol}`);
       return;
     }
     
     if (!sellForm.sellPrice || sellForm.sellPrice <= 0) {
-      alert('Please enter a valid sell price');
+      toast.error('Please enter a valid sell price');
       return;
     }
     
-    // Here you would typically make an API call to sell the stock
-    console.log('Selling stock:', {
-      symbol: sellForm.selectedStock,
-      quantity: parseFloat(sellForm.quantity),
-      sellPrice: parseFloat(sellForm.sellPrice),
-      totalValue: parseFloat(sellForm.quantity) * parseFloat(sellForm.sellPrice)
-    });
-    
-    alert(`Sell order submitted: ${sellForm.quantity} shares of ${sellForm.selectedStock} at $${sellForm.sellPrice} each`);
-    handleClose();
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${sellForm.selectedStock}/sell`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          qtty: parseFloat(sellForm.quantity),
+          price: parseFloat(sellForm.sellPrice),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit sell order');
+      }
+
+      const result = await response.json();
+      
+      console.log('Sell order successful:', result);
+      handleClose(true);
+
+    } catch (error) {
+      console.error('Error submitting sell order:', error);
+      toast.error(`Error: ${error.message}`);
+    }
   };
 
-  const handleClose = () => {
+  const handleClose = (shouldRefetch = false) => {
     setSellForm({
       selectedStock: '',
       quantity: '',
       sellPrice: ''
     });
-    onClose();
+    onClose(shouldRefetch);
   };
 
   if (!isOpen) return null;

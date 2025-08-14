@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import Portfolio from './components/Portfolio';
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   const [activeMenu, setActiveMenu] = useState('');
@@ -10,6 +11,7 @@ const App = () => {
 
   return (
     <div className="app-container">
+      <Toaster position="top-center" reverseOrder={false} />
       <header className="app-header">
         <nav className="app-nav">
           <ul>

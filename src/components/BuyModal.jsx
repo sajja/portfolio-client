@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 import './modal.css';
 
 const BuyModal = ({ isOpen, onClose }) => {
@@ -15,43 +16,59 @@ const BuyModal = ({ isOpen, onClose }) => {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!buyForm.symbol || buyForm.symbol.trim() === '') {
-      alert('Please enter a stock symbol');
+      toast.error('Please enter a stock symbol');
       return;
     }
     
     if (!buyForm.quantity || buyForm.quantity <= 0) {
-      alert('Please enter a valid quantity');
+      toast.error('Please enter a valid quantity');
       return;
     }
     
     if (!buyForm.buyPrice || buyForm.buyPrice <= 0) {
-      alert('Please enter a valid buy price');
+      toast.error('Please enter a valid buy price');
       return;
     }
     
-    // Here you would typically make an API call to buy the stock
-    console.log('Buying stock:', {
-      symbol: buyForm.symbol.toUpperCase(),
-      quantity: parseFloat(buyForm.quantity),
-      buyPrice: parseFloat(buyForm.buyPrice),
-      totalValue: parseFloat(buyForm.quantity) * parseFloat(buyForm.buyPrice)
-    });
-    
-    alert(`Buy order submitted: ${buyForm.quantity} shares of ${buyForm.symbol.toUpperCase()} at $${buyForm.buyPrice} each`);
-    handleClose();
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${buyForm.symbol.toUpperCase()}/buy`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          qtty: parseFloat(buyForm.quantity),
+          price: parseFloat(buyForm.buyPrice),
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to submit buy order');
+      }
+
+      const result = await response.json();
+      
+      console.log('Buy order successful:', result);
+      handleClose(true);
+
+    } catch (error) {
+      console.error('Error submitting buy order:', error);
+      toast.error(`Error: ${error.message}`);
+    }
   };
 
-  const handleClose = () => {
+  const handleClose = (shouldRefetch = false) => {
     setBuyForm({
       symbol: '',
       quantity: '',
       buyPrice: ''
     });
-    onClose();
+    onClose(shouldRefetch);
   };
 
   if (!isOpen) return null;
