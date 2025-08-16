@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import BuyModal from './BuyModal';
 import SellModal from './SellModal';
+import TransactionModal from './TransactionModal';
 import './holdings.css';
 
 const Holdings = ({ onBack }) => {
@@ -10,6 +11,8 @@ const Holdings = ({ onBack }) => {
   const [error, setError] = useState(null);
   const [showSellModal, setShowSellModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
+  const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [selectedStock, setSelectedStock] = useState(null);
 
   const fetchData = async () => {
     try {
@@ -88,6 +91,16 @@ const Holdings = ({ onBack }) => {
     if (shouldRefetch) {
       fetchData();
     }
+  };
+
+  const handleRowClick = (symbol) => {
+    setSelectedStock(symbol);
+    setShowTransactionModal(true);
+  };
+
+  const handleTransactionModalClose = () => {
+    setShowTransactionModal(false);
+    setSelectedStock(null);
   };
 
   // Get profit data from API or use defaults
@@ -232,7 +245,7 @@ const Holdings = ({ onBack }) => {
           </thead>
           <tbody>
             {holdings.map((holding) => (
-              <tr key={holding.id}>
+              <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
                 <td className="symbol">{holding.symbol}</td>
                 <td>{holding.shares.toLocaleString()}</td>
                 <td>{formatCurrency(holding.avgPrice)}</td>
@@ -259,6 +272,12 @@ const Holdings = ({ onBack }) => {
       <BuyModal 
         isOpen={showBuyModal} 
         onClose={handleBuyModalClose}
+      />
+
+      <TransactionModal
+        isOpen={showTransactionModal}
+        onClose={handleTransactionModalClose}
+        stockSymbol={selectedStock}
       />
     </div>
   );
