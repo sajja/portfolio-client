@@ -42,6 +42,20 @@
   justify-content: center;
 }
 
+/* Dividend Modal Styles */
+.dividend-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 .transaction-modal .modal-content {
   width: 95% !important;
   max-width: 1200px !important;
@@ -222,6 +236,30 @@
   background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+}
+
+/* Dividend modal submit button */
+.dividend-modal .submit-btn {
+  background: linear-gradient(135deg, #6f42c1 0%, #fd7e14 100%);
+}
+
+.dividend-modal .submit-btn:hover {
+  background: linear-gradient(135deg, #5a32a3 0%, #e83e8c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
+}
+
+/* Dividend modal submit button - uses same modal class as buy-modal */
+.buy-modal .submit-btn[type="submit"]:has-text("Register Dividend"),
+.dividend-modal .submit-btn {
+  background: linear-gradient(135deg, #6f42c1 0%, #fd7e14 100%);
+}
+
+.buy-modal .submit-btn[type="submit"]:has-text("Register Dividend"):hover,
+.dividend-modal .submit-btn:hover {
+  background: linear-gradient(135deg, #5a32a3 0%, #e83e8c 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
 }
 
 /* Responsive design for modal */

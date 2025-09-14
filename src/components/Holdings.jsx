@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import BuyModal from './BuyModal';
 import SellModal from './SellModal';
 import TransactionModal from './TransactionModal';
+import DividendModal from './DividendModal';
 import './holdings.css';
 
 const Holdings = ({ onBack }) => {
@@ -12,6 +13,7 @@ const Holdings = ({ onBack }) => {
   const [showSellModal, setShowSellModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
+  const [showDividendModal, setShowDividendModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
 
   const fetchData = async () => {
@@ -101,6 +103,17 @@ const Holdings = ({ onBack }) => {
   const handleTransactionModalClose = () => {
     setShowTransactionModal(false);
     setSelectedStock(null);
+  };
+
+  const handleDividendClick = () => {
+    setShowDividendModal(true);
+  };
+
+  const handleDividendModalClose = (shouldRefetch) => {
+    setShowDividendModal(false);
+    if (shouldRefetch) {
+      fetchData();
+    }
   };
 
   // Get profit data from API or use defaults
@@ -226,6 +239,10 @@ const Holdings = ({ onBack }) => {
               <span className="btn-icon">−</span>
               Sell Stock
             </button>
+            <button className="action-btn dividend-btn" onClick={handleDividendClick}>
+              <span className="btn-icon">💰</span>
+              Register Dividend
+            </button>
           </div>
         </div>
       </div>
@@ -278,6 +295,12 @@ const Holdings = ({ onBack }) => {
         isOpen={showTransactionModal}
         onClose={handleTransactionModalClose}
         stockSymbol={selectedStock}
+      />
+
+      <DividendModal
+        isOpen={showDividendModal}
+        onClose={handleDividendModalClose}
+        holdings={holdings}
       />
     </div>
   );
