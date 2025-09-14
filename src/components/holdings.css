@@ -322,3 +322,353 @@
     font-size: 0.85rem;
   }
 }
+
+/* Tab Navigation */
+.tab-navigation {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  cursor: pointer;
+  border-radius: 6px 6px 0 0;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  color: #6c757d;
+}
+
+.tab-btn:hover {
+  background: #f8f9fa;
+  color: #495057;
+}
+
+.tab-btn.active {
+  background: #3498db;
+  color: white;
+  transform: translateY(2px);
+}
+
+.tab-icon {
+  font-size: 1.1rem;
+}
+
+.tab-content {
+  min-height: 400px;
+}
+
+/* Overview Tab Styles */
+.overview-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.portfolio-overview {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.summary-card-large {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(52, 152, 219, 0.3);
+}
+
+.summary-card-large h3 {
+  margin: 0 0 1rem 0;
+  font-size: 1.1rem;
+  opacity: 0.9;
+}
+
+.total-value-large {
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin: 0;
+}
+
+.asset-allocation {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #28a745;
+}
+
+.asset-allocation h3 {
+  margin: 0 0 1.5rem 0;
+  color: #2c3e50;
+}
+
+.allocation-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.allocation-item {
+  background: white;
+  padding: 1rem;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.allocation-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.asset-type {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.allocation-percent {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.allocation-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.allocation-fill {
+  height: 100%;
+  transition: width 0.3s ease;
+}
+
+.equity-fill {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.fd-fill {
+  background: linear-gradient(135deg, #28a745, #20c997);
+}
+
+.fx-fill {
+  background: linear-gradient(135deg, #6f42c1, #fd7e14);
+}
+
+.allocation-value {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+}
+
+/* Quick Stats */
+.quick-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.stat-card {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-left: 4px solid #e9ecef;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-left-color: #3498db;
+}
+
+.stat-card h4 {
+  margin: 0 0 1rem 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+}
+
+.stat-numbers {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.stat-count {
+  font-size: 0.9rem;
+  color: #6c757d;
+}
+
+.stat-value {
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.stat-change {
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.stat-change.positive {
+  color: #28a745;
+}
+
+.stat-change.negative {
+  color: #dc3545;
+}
+
+.stat-change.neutral {
+  color: #6c757d;
+}
+
+/* Fixed Deposits Styles */
+.fixed-deposits-content,
+.fx-accounts-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.fd-summary,
+.fx-summary {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+}
+
+.fd-table-container,
+.fx-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.fd-table,
+.fx-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fd-table th,
+.fd-table td,
+.fx-table th,
+.fx-table td {
+  padding: 1rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.fd-table th,
+.fx-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+}
+
+.bank-name,
+.currency {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.interest-rate {
+  color: #28a745;
+  font-weight: 600;
+}
+
+.interest-earned {
+  font-weight: 600;
+}
+
+.exchange-rate {
+  font-family: monospace;
+  color: #6c757d;
+}
+
+.usd-value {
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.no-data {
+  text-align: center;
+  padding: 3rem 2rem;
+  color: #6c757d;
+}
+
+.no-data p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-data small {
+  font-style: italic;
+  color: #adb5bd;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .portfolio-overview {
+    grid-template-columns: 1fr;
+  }
+  
+  .quick-stats {
+    grid-template-columns: 1fr;
+  }
+  
+  .tab-navigation {
+    flex-wrap: wrap;
+  }
+  
+  .tab-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .fd-summary,
+  .fx-summary {
+    grid-template-columns: 1fr;
+  }
+  
+  .fd-table,
+  .fx-table {
+    font-size: 0.8rem;
+  }
+  
+  .fd-table th,
+  .fd-table td,
+  .fx-table th,
+  .fx-table td {
+    padding: 0.5rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .total-value-large {
+    font-size: 2rem;
+  }
+  
+  .tab-btn {
+    padding: 0.5rem 1rem;
+    font-size: 0.9rem;
+  }
+  
+  .allocation-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+}

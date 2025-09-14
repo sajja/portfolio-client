@@ -8,9 +8,12 @@ import './holdings.css';
 
 const Holdings = ({ onBack }) => {
   const [holdings, setHoldings] = useState([]);
+  const [fixedDeposits, setFixedDeposits] = useState([]);
+  const [fxAccounts, setFxAccounts] = useState([]);
   const [profitSummary, setProfitSummary] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [activeTab, setActiveTab] = useState('overview');
   const [showSellModal, setShowSellModal] = useState(false);
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
@@ -22,10 +25,12 @@ const Holdings = ({ onBack }) => {
     try {
       setLoading(true);
       
-      // Fetch holdings and profit summary in parallel
-      const [holdingsResponse, summaryResponse] = await Promise.all([
+      // Fetch all portfolio data in parallel
+      const [holdingsResponse, summaryResponse, fdResponse, fxResponse] = await Promise.all([
         fetch('http://localhost:3000/api/v1/portfolio/equity'),
-        fetch('http://localhost:3000/api/v1/portfolio/summary')
+        fetch('http://localhost:3000/api/v1/portfolio/summary'),
+        fetch('http://localhost:3000/api/v1/portfolio/fixed-deposits').catch(() => ({ ok: false })),
+        fetch('http://localhost:3000/api/v1/portfolio/fx-accounts').catch(() => ({ ok: false }))
       ]);
       
       if (!holdingsResponse.ok || !summaryResponse.ok) {
@@ -36,6 +41,18 @@ const Holdings = ({ onBack }) => {
         holdingsResponse.json(),
         summaryResponse.json()
       ]);
+
+      // Handle optional endpoints
+      let fdData = { deposits: [] };
+      let fxData = { accounts: [] };
+      
+      if (fdResponse.ok) {
+        fdData = await fdResponse.json();
+      }
+      
+      if (fxResponse.ok) {
+        fxData = await fxResponse.json();
+      }
       
       // Transform holdings data
       const transformedHoldings = holdingsData.stocks.map((stock, index) => ({
@@ -50,8 +67,31 @@ const Holdings = ({ onBack }) => {
         date: stock.date,
         comment: stock.comment
       }));
+
+      // Transform fixed deposits data
+      const transformedFDs = (fdData.deposits || []).map((fd, index) => ({
+        id: index + 1,
+        bank: fd.bank || 'Unknown Bank',
+        amount: fd.principal || 0,
+        interestRate: fd.interest_rate || 0,
+        maturityDate: fd.maturity_date,
+        currentValue: fd.current_value || fd.principal || 0,
+        interestEarned: (fd.current_value || fd.principal || 0) - (fd.principal || 0)
+      }));
+
+      // Transform FX accounts data
+      const transformedFX = (fxData.accounts || []).map((fx, index) => ({
+        id: index + 1,
+        currency: fx.currency || 'USD',
+        balance: fx.balance || 0,
+        exchangeRate: fx.exchange_rate || 1,
+        usdValue: (fx.balance || 0) * (fx.exchange_rate || 1),
+        lastUpdated: fx.last_updated
+      }));
       
       setHoldings(transformedHoldings);
+      setFixedDeposits(transformedFDs);
+      setFxAccounts(transformedFX);
       setProfitSummary(summaryData.equity);
     } catch (err) {
       setError(err.message);
@@ -68,6 +108,16 @@ const Holdings = ({ onBack }) => {
   const totalMarketValue = holdings.reduce((sum, holding) => sum + holding.marketValue, 0);
   const totalGainLoss = holdings.reduce((sum, holding) => sum + holding.gainLoss, 0);
   const totalGainLossPercent = (totalGainLoss / (totalMarketValue - totalGainLoss)) * 100;
+
+  // Calculate totals for all asset types
+  const totalFDValue = fixedDeposits.reduce((sum, fd) => sum + fd.currentValue, 0);
+  const totalFXValue = fxAccounts.reduce((sum, fx) => sum + fx.usdValue, 0);
+  const totalPortfolioValue = totalMarketValue + totalFDValue + totalFXValue;
+
+  // Asset allocation percentages
+  const equityAllocation = totalPortfolioValue > 0 ? (totalMarketValue / totalPortfolioValue) * 100 : 0;
+  const fdAllocation = totalPortfolioValue > 0 ? (totalFDValue / totalPortfolioValue) * 100 : 0;
+  const fxAllocation = totalPortfolioValue > 0 ? (totalFXValue / totalPortfolioValue) * 100 : 0;
 
   // Calculate profits from API data
   const calculateProfit = (investment, profitPercent) => {
@@ -152,6 +202,284 @@ const Holdings = ({ onBack }) => {
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
   };
 
+  // Render functions for different tabs
+  const renderOverview = () => (
+    <div className="overview-content">
+      {/* Portfolio Summary */}
+      <div className="portfolio-overview">
+        <div className="summary-card-large">
+          <h3>Total Portfolio Value</h3>
+          <p className="total-value-large">{formatCurrency(totalPortfolioValue)}</p>
+        </div>
+        
+        {/* Asset Allocation */}
+        <div className="asset-allocation">
+          <h3>Asset Allocation</h3>
+          <div className="allocation-grid">
+            <div className="allocation-item">
+              <div className="allocation-header">
+                <span className="asset-type">Equity</span>
+                <span className="allocation-percent">{formatPercent(equityAllocation)}</span>
+              </div>
+              <div className="allocation-bar">
+                <div 
+                  className="allocation-fill equity-fill" 
+                  style={{ width: `${equityAllocation}%` }}
+                ></div>
+              </div>
+              <span className="allocation-value">{formatCurrency(totalMarketValue)}</span>
+            </div>
+            
+            <div className="allocation-item">
+              <div className="allocation-header">
+                <span className="asset-type">Fixed Deposits</span>
+                <span className="allocation-percent">{formatPercent(fdAllocation)}</span>
+              </div>
+              <div className="allocation-bar">
+                <div 
+                  className="allocation-fill fd-fill" 
+                  style={{ width: `${fdAllocation}%` }}
+                ></div>
+              </div>
+              <span className="allocation-value">{formatCurrency(totalFDValue)}</span>
+            </div>
+            
+            <div className="allocation-item">
+              <div className="allocation-header">
+                <span className="asset-type">FX Accounts</span>
+                <span className="allocation-percent">{formatPercent(fxAllocation)}</span>
+              </div>
+              <div className="allocation-bar">
+                <div 
+                  className="allocation-fill fx-fill" 
+                  style={{ width: `${fxAllocation}%` }}
+                ></div>
+              </div>
+              <span className="allocation-value">{formatCurrency(totalFXValue)}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick Stats Cards */}
+      <div className="quick-stats">
+        <div className="stat-card" onClick={() => setActiveTab('equity')}>
+          <h4>Equity Holdings</h4>
+          <div className="stat-numbers">
+            <span className="stat-count">{holdings.length} stocks</span>
+            <span className="stat-value">{formatCurrency(totalMarketValue)}</span>
+            <span className={`stat-change ${totalGainLoss >= 0 ? 'positive' : 'negative'}`}>
+              {formatCurrency(totalGainLoss)} ({formatPercent(totalGainLossPercent)})
+            </span>
+          </div>
+        </div>
+        
+        <div className="stat-card" onClick={() => setActiveTab('fixed-deposits')}>
+          <h4>Fixed Deposits</h4>
+          <div className="stat-numbers">
+            <span className="stat-count">{fixedDeposits.length} deposits</span>
+            <span className="stat-value">{formatCurrency(totalFDValue)}</span>
+            <span className="stat-change positive">
+              {formatCurrency(fixedDeposits.reduce((sum, fd) => sum + fd.interestEarned, 0))} interest
+            </span>
+          </div>
+        </div>
+        
+        <div className="stat-card" onClick={() => setActiveTab('fx-accounts')}>
+          <h4>FX Accounts</h4>
+          <div className="stat-numbers">
+            <span className="stat-count">{fxAccounts.length} accounts</span>
+            <span className="stat-value">{formatCurrency(totalFXValue)}</span>
+            <span className="stat-change neutral">
+              {fxAccounts.length} currencies
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderEquityTab = () => (
+    <div className="equity-content">
+      <div className="holdings-summary">
+        <div className="summary-card">
+          <h3>Total Portfolio Value</h3>
+          <p className="total-value">{formatCurrency(totalMarketValue)}</p>
+        </div>
+        <div className="summary-card">
+          <h3>Total Gain/Loss</h3>
+          <p className={`gain-loss ${totalGainLoss >= 0 ? 'positive' : 'negative'}`}>
+            {formatCurrency(totalGainLoss)} ({formatPercent(totalGainLossPercent)})
+          </p>
+        </div>
+        <div className="summary-card action-card">
+          <h3>Quick Actions</h3>
+          <div className="action-buttons">
+            <button className="action-btn buy-btn" onClick={handleBuyClick}>
+              <span className="btn-icon">+</span>
+              Buy Stock
+            </button>
+            <button className="action-btn sell-btn" onClick={handleSellClick}>
+              <span className="btn-icon">−</span>
+              Sell Stock
+            </button>
+            <button className="action-btn dividend-btn" onClick={handleDividendClick}>
+              <span className="btn-icon">💰</span>
+              Dividend
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="holdings-table-container">
+        <table className="holdings-table">
+          <thead>
+            <tr>
+              <th>Symbol</th>
+              <th>Shares</th>
+              <th>Avg Price</th>
+              <th>Current Price</th>
+              <th>Market Value</th>
+              <th>Gain/Loss</th>
+              <th>%</th>
+            </tr>
+          </thead>
+          <tbody>
+            {holdings.map((holding) => (
+              <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
+                <td className="symbol">{holding.symbol}</td>
+                <td>{holding.shares.toLocaleString()}</td>
+                <td>{formatCurrency(holding.avgPrice)}</td>
+                <td>{formatCurrency(holding.currentPrice)}</td>
+                <td>{formatCurrency(holding.marketValue)}</td>
+                <td className={`gain-loss ${holding.gainLoss >= 0 ? 'positive' : 'negative'}`}>
+                  {formatCurrency(holding.gainLoss)}
+                </td>
+                <td className={`gain-loss ${holding.gainLossPercent >= 0 ? 'positive' : 'negative'}`}>
+                  {formatPercent(holding.gainLossPercent)}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+
+  const renderFixedDepositsTab = () => (
+    <div className="fixed-deposits-content">
+      <div className="fd-summary">
+        <div className="summary-card">
+          <h3>Total FD Value</h3>
+          <p className="total-value">{formatCurrency(totalFDValue)}</p>
+        </div>
+        <div className="summary-card">
+          <h3>Total Interest Earned</h3>
+          <p className="gain-loss positive">
+            {formatCurrency(fixedDeposits.reduce((sum, fd) => sum + fd.interestEarned, 0))}
+          </p>
+        </div>
+        <div className="summary-card">
+          <h3>Average Interest Rate</h3>
+          <p className="interest-rate">
+            {fixedDeposits.length > 0 
+              ? `${(fixedDeposits.reduce((sum, fd) => sum + fd.interestRate, 0) / fixedDeposits.length).toFixed(2)}%`
+              : '0.00%'
+            }
+          </p>
+        </div>
+      </div>
+
+      <div className="fd-table-container">
+        <table className="fd-table">
+          <thead>
+            <tr>
+              <th>Bank</th>
+              <th>Principal</th>
+              <th>Interest Rate</th>
+              <th>Current Value</th>
+              <th>Interest Earned</th>
+              <th>Maturity Date</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fixedDeposits.map((fd) => (
+              <tr key={fd.id}>
+                <td className="bank-name">{fd.bank}</td>
+                <td>{formatCurrency(fd.amount)}</td>
+                <td className="interest-rate">{fd.interestRate.toFixed(2)}%</td>
+                <td>{formatCurrency(fd.currentValue)}</td>
+                <td className="interest-earned positive">{formatCurrency(fd.interestEarned)}</td>
+                <td>{fd.maturityDate ? new Date(fd.maturityDate).toLocaleDateString() : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {fixedDeposits.length === 0 && (
+          <div className="no-data">
+            <p>No fixed deposits found.</p>
+            <small>Add fixed deposits to track your secure investments.</small>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
+  const renderFXAccountsTab = () => (
+    <div className="fx-accounts-content">
+      <div className="fx-summary">
+        <div className="summary-card">
+          <h3>Total FX Value (USD)</h3>
+          <p className="total-value">{formatCurrency(totalFXValue)}</p>
+        </div>
+        <div className="summary-card">
+          <h3>Number of Currencies</h3>
+          <p className="currency-count">{new Set(fxAccounts.map(fx => fx.currency)).size}</p>
+        </div>
+        <div className="summary-card">
+          <h3>Largest Position</h3>
+          <p className="largest-position">
+            {fxAccounts.length > 0 
+              ? formatCurrency(Math.max(...fxAccounts.map(fx => fx.usdValue)))
+              : formatCurrency(0)
+            }
+          </p>
+        </div>
+      </div>
+
+      <div className="fx-table-container">
+        <table className="fx-table">
+          <thead>
+            <tr>
+              <th>Currency</th>
+              <th>Balance</th>
+              <th>Exchange Rate</th>
+              <th>USD Value</th>
+              <th>Last Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            {fxAccounts.map((fx) => (
+              <tr key={fx.id}>
+                <td className="currency">{fx.currency}</td>
+                <td>{fx.balance.toLocaleString()}</td>
+                <td className="exchange-rate">{fx.exchangeRate.toFixed(4)}</td>
+                <td className="usd-value">{formatCurrency(fx.usdValue)}</td>
+                <td>{fx.lastUpdated ? new Date(fx.lastUpdated).toLocaleDateString() : 'N/A'}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+        {fxAccounts.length === 0 && (
+          <div className="no-data">
+            <p>No FX accounts found.</p>
+            <small>Add foreign currency accounts to track international holdings.</small>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+
   if (loading) {
     return (
       <div className="holdings-container">
@@ -195,13 +523,15 @@ const Holdings = ({ onBack }) => {
             ← Back to Portfolio
           </button>
           <h2>Holdings</h2>
-          <button 
-            className="dividend-info-btn" 
-            onClick={handleDividendInfoClick}
-            title="View Dividend Information"
-          >
-            📈
-          </button>
+          {activeTab === 'equity' && (
+            <button 
+              className="dividend-info-btn" 
+              onClick={handleDividendInfoClick}
+              title="View Dividend Information"
+            >
+              📈
+            </button>
+          )}
         </div>
         <div className="profit-periods">
           <div className="profit-period">
@@ -234,97 +564,79 @@ const Holdings = ({ onBack }) => {
         </div>
       </div>
 
-      <div className="holdings-summary">
-        <div className="summary-card">
-          <h3>Total Portfolio Value</h3>
-          <p className="total-value">{formatCurrency(totalMarketValue)}</p>
-        </div>
-        <div className="summary-card">
-          <h3>Total Gain/Loss</h3>
-          <p className={`gain-loss ${totalGainLoss >= 0 ? 'positive' : 'negative'}`}>
-            {formatCurrency(totalGainLoss)} ({formatPercent(totalGainLossPercent)})
-          </p>
-        </div>
-        <div className="summary-card action-card">
-          <h3>Quick Actions</h3>
-          <div className="action-buttons">
-            <button className="action-btn buy-btn" onClick={handleBuyClick}>
-              <span className="btn-icon">+</span>
-              Buy Stock
-            </button>
-            <button className="action-btn sell-btn" onClick={handleSellClick}>
-              <span className="btn-icon">−</span>
-              Sell Stock
-            </button>
-            <button className="action-btn dividend-btn" onClick={handleDividendClick}>
-              <span className="btn-icon">💰</span>
-              Register Dividend
-            </button>
-          </div>
-        </div>
+      {/* Tab Navigation */}
+      <div className="tab-navigation">
+        <button 
+          className={`tab-btn ${activeTab === 'overview' ? 'active' : ''}`}
+          onClick={() => setActiveTab('overview')}
+        >
+          <span className="tab-icon">📊</span>
+          Overview
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'equity' ? 'active' : ''}`}
+          onClick={() => setActiveTab('equity')}
+        >
+          <span className="tab-icon">📈</span>
+          Equity ({holdings.length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'fixed-deposits' ? 'active' : ''}`}
+          onClick={() => setActiveTab('fixed-deposits')}
+        >
+          <span className="tab-icon">🏦</span>
+          Fixed Deposits ({fixedDeposits.length})
+        </button>
+        <button 
+          className={`tab-btn ${activeTab === 'fx-accounts' ? 'active' : ''}`}
+          onClick={() => setActiveTab('fx-accounts')}
+        >
+          <span className="tab-icon">💱</span>
+          FX Accounts ({fxAccounts.length})
+        </button>
       </div>
 
-      <div className="holdings-table-container">
-        <table className="holdings-table">
-          <thead>
-            <tr>
-              <th>Symbol</th>
-              <th>Shares</th>
-              <th>Avg Price</th>
-              <th>Current Price</th>
-              <th>Market Value</th>
-              <th>Gain/Loss</th>
-              <th>%</th>
-            </tr>
-          </thead>
-          <tbody>
-            {holdings.map((holding) => (
-              <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
-                <td className="symbol">{holding.symbol}</td>
-                <td>{holding.shares.toLocaleString()}</td>
-                <td>{formatCurrency(holding.avgPrice)}</td>
-                <td>{formatCurrency(holding.currentPrice)}</td>
-                <td>{formatCurrency(holding.marketValue)}</td>
-                <td className={`gain-loss ${holding.gainLoss >= 0 ? 'positive' : 'negative'}`}>
-                  {formatCurrency(holding.gainLoss)}
-                </td>
-                <td className={`gain-loss ${holding.gainLossPercent >= 0 ? 'positive' : 'negative'}`}>
-                  {formatPercent(holding.gainLossPercent)}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Tab Content */}
+      <div className="tab-content">
+        {activeTab === 'overview' && renderOverview()}
+        {activeTab === 'equity' && renderEquityTab()}
+        {activeTab === 'fixed-deposits' && renderFixedDepositsTab()}
+        {activeTab === 'fx-accounts' && renderFXAccountsTab()}
       </div>
 
-      <SellModal 
-        isOpen={showSellModal} 
-        onClose={handleSellModalClose}
-        holdings={holdings}
-      />
+      {/* Modals - only show for equity tab */}
+      {activeTab === 'equity' && (
+        <>
+          <SellModal 
+            isOpen={showSellModal} 
+            onClose={handleSellModalClose}
+            holdings={holdings}
+          />
 
-      <BuyModal 
-        isOpen={showBuyModal} 
-        onClose={handleBuyModalClose}
-      />
+          <BuyModal 
+            isOpen={showBuyModal} 
+            onClose={handleBuyModalClose}
+          />
 
-      <TransactionModal
-        isOpen={showTransactionModal}
-        onClose={handleTransactionModalClose}
-        stockSymbol={selectedStock}
-      />
+          <TransactionModal
+            isOpen={showTransactionModal}
+            onClose={handleTransactionModalClose}
+            stockSymbol={selectedStock}
+          />
 
-      <DividendModal
-        isOpen={showDividendModal}
-        onClose={handleDividendModalClose}
-        holdings={holdings}
-      />
+          <DividendModal
+            isOpen={showDividendModal}
+            onClose={handleDividendModalClose}
+            holdings={holdings}
+          />
 
-      <DividendInfoModal
-        isOpen={showDividendInfoModal}
-        onClose={handleDividendInfoModalClose}
-        holdings={holdings}
-      />
+          <DividendInfoModal
+            isOpen={showDividendInfoModal}
+            onClose={handleDividendInfoModalClose}
+            holdings={holdings}
+          />
+        </>
+      )}
     </div>
   );
 };
