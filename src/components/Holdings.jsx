@@ -4,6 +4,7 @@ import SellModal from './SellModal';
 import TransactionModal from './TransactionModal';
 import DividendModal from './DividendModal';
 import DividendInfoModal from './DividendInfoModal';
+import FixedDepositModal from './FixedDepositModal';
 import './holdings.css';
 
 const Holdings = ({ onBack }) => {
@@ -19,6 +20,7 @@ const Holdings = ({ onBack }) => {
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showDividendModal, setShowDividendModal] = useState(false);
   const [showDividendInfoModal, setShowDividendInfoModal] = useState(false);
+  const [showFixedDepositModal, setShowFixedDepositModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
 
   const fetchData = async () => {
@@ -174,6 +176,17 @@ const Holdings = ({ onBack }) => {
 
   const handleDividendInfoModalClose = () => {
     setShowDividendInfoModal(false);
+  };
+
+  const handleAddFDClick = () => {
+    setShowFixedDepositModal(true);
+  };
+
+  const handleFixedDepositModalClose = (shouldRefetch) => {
+    setShowFixedDepositModal(false);
+    if (shouldRefetch) {
+      fetchData();
+    }
   };
 
   // Get profit data from API or use defaults
@@ -387,6 +400,15 @@ const Holdings = ({ onBack }) => {
               : '0.00%'
             }
           </p>
+        </div>
+        <div className="summary-card action-card">
+          <h3>Quick Actions</h3>
+          <div className="action-buttons">
+            <button className="action-btn fd-btn" onClick={handleAddFDClick}>
+              <span className="btn-icon">🏦</span>
+              Add Fixed Deposit
+            </button>
+          </div>
         </div>
       </div>
 
@@ -636,6 +658,14 @@ const Holdings = ({ onBack }) => {
             holdings={holdings}
           />
         </>
+      )}
+
+      {/* Fixed Deposit Modal - show for fixed-deposits tab */}
+      {activeTab === 'fixed-deposits' && (
+        <FixedDepositModal
+          isOpen={showFixedDepositModal}
+          onClose={handleFixedDepositModalClose}
+        />
       )}
     </div>
   );
