@@ -25,7 +25,10 @@ const TransactionModal = ({ isOpen, onClose, stockSymbol }) => {
       }
       
       const data = await response.json();
-      setTransactions(data.transactions || []);
+      const sortedTransactions = (data.transactions || []).sort((a, b) => 
+        new Date(a.date) - new Date(b.date)
+      );
+      setTransactions(sortedTransactions);
     } catch (err) {
       setError(err.message);
       toast.error(`Error fetching transactions: ${err.message}`);
