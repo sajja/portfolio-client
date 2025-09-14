@@ -55,6 +55,37 @@ const TransactionModal = ({ isOpen, onClose, stockSymbol }) => {
     });
   };
 
+  const formatPercent = (percent) => {
+    if (percent === null || percent === undefined) return '-';
+    return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
+  };
+
+  const calculateProfitLossPercent = (transaction, avgBuyPrice) => {
+    // Only calculate percentage for sell transactions
+    if (transaction.type !== 'sell' || !avgBuyPrice || avgBuyPrice === 0) {
+      return null;
+    }
+    
+    const sellPrice = transaction.price;
+    return ((sellPrice - avgBuyPrice) / avgBuyPrice) * 100;
+  };
+
+  // Calculate average buy price from all buy transactions
+  const getAverageBuyPrice = () => {
+    const buyTransactions = transactions.filter(t => t.type === 'buy');
+    if (buyTransactions.length === 0) return 0;
+    
+    let totalQuantity = 0;
+    let totalValue = 0;
+    
+    buyTransactions.forEach(transaction => {
+      totalQuantity += transaction.qtty;
+      totalValue += transaction.qtty * transaction.price;
+    });
+    
+    return totalQuantity > 0 ? totalValue / totalQuantity : 0;
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -94,32 +125,47 @@ const TransactionModal = ({ isOpen, onClose, stockSymbol }) => {
                   <th>Price</th>
                   <th>Date</th>
                   <th>Profit/Loss</th>
+                  <th>P/L %</th>
                   <th>Total Value</th>
                 </tr>
               </thead>
               <tbody>
-                {transactions.map((transaction, index) => (
-                  <tr key={index}>
-                    <td>
-                      <span className={`transaction-type ${transaction.type}`}>
-                        {transaction.type.toUpperCase()}
-                      </span>
-                    </td>
-                    <td>{transaction.qtty.toLocaleString()}</td>
-                    <td>{formatCurrency(transaction.price)}</td>
-                    <td>{formatDate(transaction.date)}</td>
-                    <td>
-                      {transaction.profit_loss !== null ? (
-                        <span className={`profit-loss ${transaction.profit_loss >= 0 ? 'positive' : 'negative'}`}>
-                          {formatCurrency(transaction.profit_loss)}
+                {transactions.map((transaction, index) => {
+                  const avgBuyPrice = getAverageBuyPrice();
+                  const profitLossPercent = calculateProfitLossPercent(transaction, avgBuyPrice);
+                  
+                  return (
+                    <tr key={index}>
+                      <td>
+                        <span className={`transaction-type ${transaction.type}`}>
+                          {transaction.type.toUpperCase()}
                         </span>
-                      ) : (
-                        <span className="no-profit-loss">-</span>
-                      )}
-                    </td>
-                    <td>{formatCurrency(transaction.qtty * transaction.price)}</td>
-                  </tr>
-                ))}
+                      </td>
+                      <td>{transaction.qtty.toLocaleString()}</td>
+                      <td>{formatCurrency(transaction.price)}</td>
+                      <td>{formatDate(transaction.date)}</td>
+                      <td>
+                        {transaction.profit_loss !== null ? (
+                          <span className={`profit-loss ${transaction.profit_loss >= 0 ? 'positive' : 'negative'}`}>
+                            {formatCurrency(transaction.profit_loss)}
+                          </span>
+                        ) : (
+                          <span className="no-profit-loss">-</span>
+                        )}
+                      </td>
+                      <td>
+                        {profitLossPercent !== null ? (
+                          <span className={`profit-loss ${profitLossPercent >= 0 ? 'positive' : 'negative'}`}>
+                            {formatPercent(profitLossPercent)}
+                          </span>
+                        ) : (
+                          <span className="no-profit-loss">-</span>
+                        )}
+                      </td>
+                      <td>{formatCurrency(transaction.qtty * transaction.price)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
