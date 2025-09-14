@@ -19,19 +19,19 @@ const Portfolio = () => {
           className="portfolio-section clickable" 
           onClick={() => setCurrentView('holdings')}
         >
-          <h3>Holdings</h3>
-          <p>Your current investment holdings will be displayed here.</p>
+          <h3>Equity</h3>
+          <p>Your current equity holdings will be displayed here.</p>
           <span className="click-hint">Click to view →</span>
         </div>
         
         <div className="portfolio-section">
-          <h3>Performance</h3>
-          <p>Portfolio performance metrics and charts will be shown here.</p>
+          <h3>Fixed Deposits</h3>
+          <p>Your fixed deposit investments and interest tracking will be shown here.</p>
         </div>
         
         <div className="portfolio-section">
-          <h3>Analytics</h3>
-          <p>Detailed analytics and insights about your portfolio.</p>
+          <h3>FX Accounts</h3>
+          <p>Foreign exchange accounts and currency holdings will be displayed here.</p>
         </div>
       </div>
     </div>
