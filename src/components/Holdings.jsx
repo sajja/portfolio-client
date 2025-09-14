@@ -31,7 +31,7 @@ const Holdings = ({ onBack }) => {
       const [holdingsResponse, summaryResponse, fdResponse, fxResponse] = await Promise.all([
         fetch('http://localhost:3000/api/v1/portfolio/equity'),
         fetch('http://localhost:3000/api/v1/portfolio/summary'),
-        fetch('http://localhost:3000/api/v1/portfolio/fixed-deposits').catch(() => ({ ok: false })),
+        fetch('http://localhost:3000/api/v1/portfolio/fd').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/fx-accounts').catch(() => ({ ok: false }))
       ]);
       
@@ -45,7 +45,7 @@ const Holdings = ({ onBack }) => {
       ]);
 
       // Handle optional endpoints
-      let fdData = { deposits: [] };
+      let fdData = { fixedDeposits: [] };
       let fxData = { accounts: [] };
       
       if (fdResponse.ok) {
@@ -71,14 +71,18 @@ const Holdings = ({ onBack }) => {
       }));
 
       // Transform fixed deposits data
-      const transformedFDs = (fdData.deposits || []).map((fd, index) => ({
-        id: index + 1,
-        bank: fd.bank || 'Unknown Bank',
-        amount: fd.principal || 0,
-        interestRate: fd.interest_rate || 0,
-        maturityDate: fd.maturity_date,
-        currentValue: fd.current_value || fd.principal || 0,
-        interestEarned: (fd.current_value || fd.principal || 0) - (fd.principal || 0)
+      const transformedFDs = (fdData.fixedDeposits || []).map((fd, index) => ({
+        id: fd.id || index + 1,
+        bank: fd.bankName || 'Unknown Bank',
+        amount: fd.principalAmount || 0,
+        interestRate: fd.interestRate || 0,
+        maturityPeriod: fd.maturityPeriod || 0,
+        maturityValue: fd.maturityValue || 0,
+        startDate: fd.startDate,
+        maturityDate: fd.maturityDate,
+        createdAt: fd.createdAt,
+        currentValue: fd.maturityValue || fd.principalAmount || 0,
+        interestEarned: (fd.maturityValue || 0) - (fd.principalAmount || 0)
       }));
 
       // Transform FX accounts data
@@ -112,7 +116,7 @@ const Holdings = ({ onBack }) => {
   const totalGainLossPercent = (totalGainLoss / (totalMarketValue - totalGainLoss)) * 100;
 
   // Calculate totals for all asset types
-  const totalFDValue = fixedDeposits.reduce((sum, fd) => sum + fd.currentValue, 0);
+  const totalFDValue = fixedDeposits.reduce((sum, fd) => sum + fd.maturityValue, 0); // Use maturity value
   const totalFXValue = fxAccounts.reduce((sum, fx) => sum + fx.usdValue, 0);
   const totalPortfolioValue = totalMarketValue + totalFDValue + totalFXValue;
 
@@ -417,10 +421,12 @@ const Holdings = ({ onBack }) => {
           <thead>
             <tr>
               <th>Bank</th>
-              <th>Principal</th>
+              <th>Principal Amount</th>
               <th>Interest Rate</th>
-              <th>Current Value</th>
+              <th>Maturity Period (Months)</th>
+              <th>Maturity Value</th>
               <th>Interest Earned</th>
+              <th>Start Date</th>
               <th>Maturity Date</th>
             </tr>
           </thead>
@@ -430,8 +436,10 @@ const Holdings = ({ onBack }) => {
                 <td className="bank-name">{fd.bank}</td>
                 <td>{formatCurrency(fd.amount)}</td>
                 <td className="interest-rate">{fd.interestRate.toFixed(2)}%</td>
-                <td>{formatCurrency(fd.currentValue)}</td>
+                <td>{fd.maturityPeriod} months</td>
+                <td className="maturity-value">{formatCurrency(fd.maturityValue)}</td>
                 <td className="interest-earned positive">{formatCurrency(fd.interestEarned)}</td>
+                <td>{fd.startDate ? new Date(fd.startDate).toLocaleDateString() : 'N/A'}</td>
                 <td>{fd.maturityDate ? new Date(fd.maturityDate).toLocaleDateString() : 'N/A'}</td>
               </tr>
             ))}

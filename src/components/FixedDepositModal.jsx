@@ -47,16 +47,14 @@ const FixedDepositModal = ({ isOpen, onClose }) => {
       maturityDate.setMonth(today.getMonth() + parseInt(fdForm.maturityPeriod));
       
       const fdData = {
-        bank: fdForm.bank.trim(),
-        principal: parseFloat(fdForm.principal),
-        interest_rate: parseFloat(fdForm.interestRate),
-        maturity_period_months: parseInt(fdForm.maturityPeriod),
-        maturity_date: maturityDate.toISOString().split('T')[0], // YYYY-MM-DD format
-        start_date: today.toISOString().split('T')[0]
+        bankName: fdForm.bank.trim(),
+        principalAmount: parseFloat(fdForm.principal),
+        interestRate: parseFloat(fdForm.interestRate),
+        maturityPeriod: parseInt(fdForm.maturityPeriod)
       };
 
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/fixed-deposits', {
-        method: 'POST',
+      const response = await fetch('http://localhost:3000/api/v1/portfolio/fd', {
+        method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
         },
