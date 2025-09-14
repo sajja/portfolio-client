@@ -3,6 +3,7 @@ import BuyModal from './BuyModal';
 import SellModal from './SellModal';
 import TransactionModal from './TransactionModal';
 import DividendModal from './DividendModal';
+import DividendInfoModal from './DividendInfoModal';
 import './holdings.css';
 
 const Holdings = ({ onBack }) => {
@@ -14,6 +15,7 @@ const Holdings = ({ onBack }) => {
   const [showBuyModal, setShowBuyModal] = useState(false);
   const [showTransactionModal, setShowTransactionModal] = useState(false);
   const [showDividendModal, setShowDividendModal] = useState(false);
+  const [showDividendInfoModal, setShowDividendInfoModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
 
   const fetchData = async () => {
@@ -116,6 +118,14 @@ const Holdings = ({ onBack }) => {
     }
   };
 
+  const handleDividendInfoClick = () => {
+    setShowDividendInfoModal(true);
+  };
+
+  const handleDividendInfoModalClose = () => {
+    setShowDividendInfoModal(false);
+  };
+
   // Get profit data from API or use defaults
   const ytdProfit = profitSummary 
     ? calculateProfit(profitSummary.summary_24_months.total_investment, profitSummary.summary_24_months.profit_percent)
@@ -185,6 +195,13 @@ const Holdings = ({ onBack }) => {
             ← Back to Portfolio
           </button>
           <h2>Holdings</h2>
+          <button 
+            className="dividend-info-btn" 
+            onClick={handleDividendInfoClick}
+            title="View Dividend Information"
+          >
+            📈
+          </button>
         </div>
         <div className="profit-periods">
           <div className="profit-period">
@@ -300,6 +317,12 @@ const Holdings = ({ onBack }) => {
       <DividendModal
         isOpen={showDividendModal}
         onClose={handleDividendModalClose}
+        holdings={holdings}
+      />
+
+      <DividendInfoModal
+        isOpen={showDividendInfoModal}
+        onClose={handleDividendInfoModalClose}
         holdings={holdings}
       />
     </div>

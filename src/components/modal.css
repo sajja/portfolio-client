@@ -262,6 +262,341 @@
   box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
 }
 
+/* Dividend Info Button */
+.dividend-info-btn {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  border: none;
+  padding: 0.75rem;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1.2rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 8px rgba(52, 152, 219, 0.3);
+  margin-left: 1rem;
+  width: 45px;
+  height: 45px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dividend-info-btn:hover {
+  background: linear-gradient(135deg, #2980b9, #1f618d);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.4);
+}
+
+.dividend-info-btn:active {
+  transform: translateY(0);
+}
+
+/* Dividend Info Modal */
+.dividend-info-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dividend-info-content {
+  width: 95% !important;
+  max-width: 1000px !important;
+  max-height: 90vh !important;
+  overflow-y: auto;
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+}
+
+.dividend-info-content h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Dividend Sections */
+.dividend-section {
+  margin-bottom: 2rem;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.dividend-section h3 {
+  color: #2c3e50;
+  margin-bottom: 1rem;
+  font-size: 1.2rem;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+/* Portfolio Summary Grid */
+.portfolio-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.period-summary-card {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  padding: 1rem;
+  border-radius: 8px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+.period-summary-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  border-color: #3498db;
+}
+
+.period-header {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  text-align: center;
+  padding-bottom: 0.4rem;
+  border-bottom: 2px solid #3498db;
+}
+
+.summary-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.summary-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.summary-metric:last-child {
+  border-bottom: none;
+}
+
+.metric-label {
+  font-size: 0.8rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-weight: bold;
+  color: #2c3e50;
+  font-size: 0.85rem;
+}
+
+.total-amount {
+  color: #27ae60 !important;
+  font-size: 0.9rem;
+}
+
+.yield-value {
+  color: #3498db !important;
+  background: rgba(52, 152, 219, 0.1);
+  padding: 0.15rem 0.3rem;
+  border-radius: 3px;
+  font-size: 0.8rem;
+}
+
+.stocks-count {
+  color: #e67e22 !important;
+  font-weight: bold;
+}
+
+.payments-count {
+  color: #9b59b6 !important;
+  font-weight: bold;
+}
+
+/* Stock Dividends Container */
+.stock-dividends-container {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.stock-dividend-card {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1.5rem;
+  transition: all 0.3s ease;
+}
+
+.stock-dividend-card:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  transform: translateY(-2px);
+}
+
+.stock-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid #dee2e6;
+}
+
+.stock-symbol {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.stock-shares {
+  font-size: 0.9rem;
+  color: #6c757d;
+  background: #e9ecef;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+}
+
+/* Dividend Metrics */
+.dividend-metrics {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #f1f3f4;
+}
+
+.metric-label {
+  font-size: 0.9rem;
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.metric-value {
+  font-weight: bold;
+  color: #2c3e50;
+}
+
+.yield-highlight {
+  color: #27ae60 !important;
+  background: rgba(39, 174, 96, 0.1);
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+}
+
+.next-payment {
+  color: #3498db !important;
+  font-style: italic;
+}
+
+/* Payment History */
+.payment-history {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #dee2e6;
+}
+
+.payment-history h4 {
+  color: #2c3e50;
+  margin-bottom: 0.75rem;
+  font-size: 1rem;
+}
+
+.payment-history-grid {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.payment-item {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  padding: 0.5rem;
+  background: white;
+  border-radius: 4px;
+  font-size: 0.85rem;
+}
+
+.payment-month {
+  color: #6c757d;
+  font-weight: 500;
+}
+
+.payment-amount {
+  color: #27ae60;
+  font-weight: bold;
+  text-align: center;
+}
+
+.payment-per-share {
+  color: #6c757d;
+  text-align: right;
+  font-size: 0.8rem;
+}
+
+/* No Dividends Message */
+.no-dividends {
+  text-align: center;
+  padding: 2rem;
+  color: #6c757d;
+}
+
+.no-dividends p {
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.no-dividends small {
+  font-style: italic;
+  color: #adb5bd;
+}
+
+/* Summary Stats */
+.summary-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.stat-card {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  padding: 1.5rem;
+  border-radius: 8px;
+  text-align: center;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.stat-value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: bold;
+  margin-bottom: 0.5rem;
+}
+
+.stat-label {
+  display: block;
+  font-size: 0.9rem;
+  opacity: 0.9;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* Responsive design for modal */
 @media (max-width: 768px) {
   .modal-content {
@@ -273,5 +608,54 @@
     top: 0.75rem;
     right: 1rem;
     font-size: 1.75rem;
+  }
+  
+  .dividend-info-content {
+    width: 98% !important;
+    margin: 1rem;
+    padding: 1rem;
+  }
+  
+  .portfolio-summary-grid {
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+  }
+  
+  .period-summary-card {
+    padding: 0.75rem;
+  }
+  
+  .period-header {
+    font-size: 0.9rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .metric-label {
+    font-size: 0.75rem;
+  }
+  
+  .metric-value {
+    font-size: 0.8rem;
+  }
+  
+  .dividend-metrics {
+    grid-template-columns: 1fr;
+  }
+  
+  .payment-item {
+    grid-template-columns: 1fr;
+    text-align: center;
+    gap: 0.25rem;
+  }
+  
+  .summary-stats {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .dividend-info-btn {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+    margin-left: 0.5rem;
   }
 }
