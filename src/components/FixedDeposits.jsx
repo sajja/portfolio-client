@@ -59,11 +59,8 @@ const FixedDeposits = ({ onBack }) => {
     }
   };
 
-  const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD'
-    }).format(amount);
+  const formatNumber = (amount) => {
+    return new Intl.NumberFormat('en-US').format(amount);
   };
 
   // Calculate totals
@@ -114,11 +111,11 @@ const FixedDeposits = ({ onBack }) => {
       <div className="fd-summary">
         <div className="summary-card">
           <h3>Total FD Value</h3>
-          <p className="total-value">{formatCurrency(totalFDValue)}</p>
+          <p className="total-value">{formatNumber(totalFDValue)}</p>
         </div>
         <div className="summary-card">
           <h3>Total Interest Earned</h3>
-          <p className="interest-earned positive">{formatCurrency(totalInterestEarned)}</p>
+          <p className="interest-earned positive">{formatNumber(totalInterestEarned)}</p>
         </div>
         <div className="summary-card">
           <h3>Number of Deposits</h3>
@@ -158,11 +155,11 @@ const FixedDeposits = ({ onBack }) => {
             {fixedDeposits.map((fd) => (
               <tr key={fd.id}>
                 <td className="bank-name">{fd.bank}</td>
-                <td>{formatCurrency(fd.amount)}</td>
+                <td>{formatNumber(fd.amount)}</td>
                 <td className="interest-rate">{fd.interestRate.toFixed(2)}%</td>
                 <td>{fd.maturityPeriod} months</td>
-                <td className="maturity-value">{formatCurrency(fd.maturityValue)}</td>
-                <td className="interest-earned positive">{formatCurrency(fd.interestEarned)}</td>
+                <td className="maturity-value">{formatNumber(fd.maturityValue)}</td>
+                <td className="interest-earned positive">{formatNumber(fd.interestEarned)}</td>
                 <td>{fd.startDate ? new Date(fd.startDate).toLocaleDateString() : 'N/A'}</td>
                 <td>{fd.maturityDate ? new Date(fd.maturityDate).toLocaleDateString() : 'N/A'}</td>
               </tr>

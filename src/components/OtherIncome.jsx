@@ -28,7 +28,6 @@ const OtherIncome = ({ onBack }) => {
         description: income.description || income.note || '',
         dateReceived: income.dateReceived || income.date,
         taxable: income.taxable !== undefined ? income.taxable : true,
-        currency: income.currency || 'USD',
         createdAt: income.createdAt
       }));
       
@@ -45,11 +44,8 @@ const OtherIncome = ({ onBack }) => {
     fetchOtherIncomes();
   }, []);
 
-  const formatCurrency = (amount, currency = 'USD') => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: currency
-    }).format(amount);
+  const formatNumber = (amount) => {
+    return new Intl.NumberFormat('en-US').format(amount);
   };
 
   // Calculate totals
@@ -99,15 +95,15 @@ const OtherIncome = ({ onBack }) => {
       <div className="fd-summary">
         <div className="summary-card">
           <h3>Total Income</h3>
-          <p className="total-value">{formatCurrency(totalAmount)}</p>
+          <p className="total-value">{formatNumber(totalAmount)}</p>
         </div>
         <div className="summary-card">
           <h3>Taxable Income</h3>
-          <p className="total-value">{formatCurrency(taxableAmount)}</p>
+          <p className="total-value">{formatNumber(taxableAmount)}</p>
         </div>
         <div className="summary-card">
           <h3>Non-Taxable Income</h3>
-          <p className="total-value">{formatCurrency(nonTaxableAmount)}</p>
+          <p className="total-value">{formatNumber(nonTaxableAmount)}</p>
         </div>
         <div className="summary-card">
           <h3>Number of Sources</h3>
@@ -139,7 +135,7 @@ const OtherIncome = ({ onBack }) => {
                 <tr key={income.id}>
                   <td className="bank-name">{income.source}</td>
                   <td>{income.type}</td>
-                  <td className="interest-earned">{formatCurrency(income.amount, income.currency)}</td>
+                  <td className="interest-earned">{formatNumber(income.amount)}</td>
                   <td>{income.frequency}</td>
                   <td>
                     <span className={`taxable-status ${income.taxable ? 'taxable' : 'non-taxable'}`}>
