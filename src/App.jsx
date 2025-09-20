@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import Portfolio from './components/Portfolio';
+import Home from './components/Home';
 import { Toaster } from 'react-hot-toast';
 
 const App = () => {
-  const [activeMenu, setActiveMenu] = useState('');
+  const [activeMenu, setActiveMenu] = useState('home');
 
   const handleMenuClick = (menu) => {
     setActiveMenu(menu);
@@ -15,6 +16,15 @@ const App = () => {
       <header className="app-header">
         <nav className="app-nav">
           <ul>
+            <li>
+              <button
+                onClick={() => handleMenuClick('home')}
+                className={`menu-button ${activeMenu === 'home' ? 'active' : ''}`}
+                title="Home"
+              >
+                &#x1F3E0;
+              </button>
+            </li>
             <li>
               <button 
                 onClick={() => handleMenuClick('portfolio')}
@@ -44,10 +54,10 @@ const App = () => {
       </header>
       
       <main className="app-main">
+        {activeMenu === 'home' && <Home />}
         {activeMenu === 'portfolio' && <Portfolio />}
         {activeMenu === 'expense-admin' && <div><h2>Expense Admin</h2><p>Expense Admin content coming soon...</p></div>}
         {activeMenu === 'expense-report' && <div><h2>Expense Report</h2><p>Expense Report content coming soon...</p></div>}
-        {!activeMenu && <div><h1>Welcome</h1><p>Please select a menu option above.</p></div>}
       </main>
     </div>
   );

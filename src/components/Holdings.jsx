@@ -38,18 +38,23 @@ const Holdings = ({ onBack }) => {
       ]);
       
       // Transform holdings data
-      const transformedHoldings = holdingsData.stocks.map((stock, index) => ({
-        id: index + 1,
-        symbol: stock.symbol,
-        shares: stock.qtty,
-        avgPrice: stock.avg_price,
-        currentPrice: stock.lastTradedPrice,
-        marketValue: stock.qtty * stock.lastTradedPrice,
-        gainLoss: (stock.lastTradedPrice - stock.avg_price) * stock.qtty,
-        gainLossPercent: ((stock.lastTradedPrice - stock.avg_price) / stock.avg_price) * 100,
-        date: stock.date,
-        comment: stock.comment
-      }));
+      const transformedHoldings = holdingsData.stocks.map((stock, index) => {
+        const calculatedMarketValue = stock.qtty * stock.lastTradedPrice;
+        const marketValue = calculatedMarketValue === 0 ? 1000 : calculatedMarketValue;
+         
+        return {
+          id: index + 1,
+          symbol: stock.symbol,
+          shares: stock.qtty,
+          avgPrice: stock.avg_price,
+          currentPrice: stock.lastTradedPrice,
+          marketValue: marketValue,
+          gainLoss: (stock.lastTradedPrice - stock.avg_price) * stock.qtty,
+          gainLossPercent: ((stock.lastTradedPrice - stock.avg_price) / stock.avg_price) * 100,
+          date: stock.date,
+          comment: stock.comment
+        };
+      });
       
       setHoldings(transformedHoldings);
       setProfitSummary(summaryData.equity);
@@ -150,6 +155,23 @@ const Holdings = ({ onBack }) => {
 
   const formatPercent = (percent) => {
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
+  };
+
+  // Helper function to determine CSS class based on gain percentage
+  const getGainLossClass = (gainLoss, gainLossPercent) => {
+    if (gainLoss < 0) {
+      return 'negative';
+    } else if (gainLossPercent >= 100) {
+      return 'exceptional-appreciation';
+    } else if (gainLossPercent >= 50) {
+      return 'very-high-appreciation';
+    } else if (gainLossPercent >= 30) {
+      return 'high-appreciation';
+    } else if (gainLossPercent > 0) {
+      return 'light-appreciation';
+    } else {
+      return 'positive';
+    }
   };
 
   if (loading) {
@@ -287,10 +309,10 @@ const Holdings = ({ onBack }) => {
                   <td>{formatCurrency(holding.avgPrice)}</td>
                   <td>{formatCurrency(holding.currentPrice)}</td>
                   <td>{formatCurrency(holding.marketValue)}</td>
-                  <td className={`gain-loss ${holding.gainLoss >= 0 ? 'positive' : 'negative'}`}>
+                  <td className={`gain-loss ${getGainLossClass(holding.gainLoss, holding.gainLossPercent)}`}>
                     {formatCurrency(holding.gainLoss)}
                   </td>
-                  <td className={`gain-loss ${holding.gainLossPercent >= 0 ? 'positive' : 'negative'}`}>
+                  <td className={`gain-loss ${getGainLossClass(holding.gainLoss, holding.gainLossPercent)}`}>
                     {formatPercent(holding.gainLossPercent)}
                   </td>
                 </tr>

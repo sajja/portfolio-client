@@ -116,6 +116,28 @@
   color: #27ae60;
 }
 
+.gain-loss.light-appreciation {
+  color: #2ecc71;
+  font-weight: bold;
+}
+
+.gain-loss.high-appreciation {
+  color: #3498db;
+  font-weight: bold;
+}
+
+.gain-loss.very-high-appreciation {
+  color: #1976d2;
+  font-weight: bold;
+}
+
+.gain-loss.exceptional-appreciation {
+  color: #00c853;
+  background-color: #e8f5e8;
+  font-weight: bold;
+  border: none !important;
+}
+
 .gain-loss.negative {
   color: #e74c3c;
 }
@@ -479,6 +501,14 @@
   background: linear-gradient(135deg, #6f42c1, #fd7e14);
 }
 
+.index-funds-fill {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+
+.other-income-fill {
+  background: linear-gradient(135deg, #f39c12, #e67e22);
+}
+
 .allocation-value {
   font-size: 0.9rem;
   font-weight: 600;
@@ -757,4 +787,29 @@
   .quick-stats {
     grid-template-columns: 1fr;
   }
+}
+
+/* Other Income Styles */
+.taxable-status {
+  font-weight: 600;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+}
+
+.taxable-status.taxable {
+  background: #ffeaa7;
+  color: #e17055;
+}
+
+.taxable-status.non-taxable {
+  background: #d1f2eb;
+  color: #27ae60;
+}
+
+.description {
+  max-width: 200px;
+  word-wrap: break-word;
+  font-style: italic;
+  color: #6c757d;
 }
