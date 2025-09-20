@@ -577,6 +577,13 @@
   color: #6c757d;
 }
 
+.lkr-value {
+  font-size: 0.9rem;
+  color: #6c757d;
+  display: block;
+  margin-top: 0.25rem;
+}
+
 /* Fixed Deposits Styles */
 .fixed-deposits-content,
 .fx-accounts-content {
