@@ -28,7 +28,7 @@ const Portfolio = () => {
         fetch('http://localhost:3000/api/v1/portfolio/equity').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/fd').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/fx').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/index-funds').catch(() => ({ ok: false })),
+        fetch('http://localhost:3000/api/v1/portfolio/indexfund').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/other-income').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/util/rates/usd').catch(() => ({ ok: false }))
       ]);
@@ -36,7 +36,7 @@ const Portfolio = () => {
       let equityData = { stocks: [] };
       let fdData = { fixedDeposits: [] };
       let fxData = { fxDeposits: [] };
-      let indexFundsData = { funds: [] };
+      let indexFundsData = { indexFunds: [] };
       let otherIncomeData = { incomes: [] };
       
       if (equityResponse.ok) {
@@ -80,8 +80,8 @@ const Portfolio = () => {
       }, 0);
       
       // Calculate index funds value
-      const indexFundsValue = (indexFundsData.funds || []).reduce((sum, fund) => {
-        return sum + ((fund.units || 0) * (fund.currentPrice || fund.nav || 0));
+      const indexFundsValue = (indexFundsData.indexFunds || []).reduce((sum, fund) => {
+        return sum + (fund.amount || 0);
       }, 0);
       
       // Calculate other income value
@@ -104,7 +104,7 @@ const Portfolio = () => {
         },
         indexFunds: {
           value: indexFundsValue,
-          count: (indexFundsData.funds || []).length
+          count: (indexFundsData.indexFunds || []).length
         },
         otherIncome: {
           value: otherIncomeValue,

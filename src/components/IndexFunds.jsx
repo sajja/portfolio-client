@@ -7,6 +7,8 @@ const IndexFunds = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingCell, setEditingCell] = useState(null); // { fundId, field }
+  const [editValue, setEditValue] = useState('');
 
   const fetchIndexFunds = async () => {
     try {
@@ -62,6 +64,65 @@ const IndexFunds = ({ onBack }) => {
     } catch (err) {
       console.error('Error saving index fund:', err);
       setError(err.message);
+    }
+  };
+
+  const handleCellClick = (fund, field) => {
+    setEditingCell({ fundId: fund.id, field });
+    setEditValue(fund[field]);
+  };
+
+  const handleInputChange = (e) => {
+    setEditValue(e.target.value);
+  };
+
+  const handleInputBlur = async () => {
+    if (!editingCell) return;
+
+    const { fundId, field } = editingCell;
+    const originalFund = indexFunds.find(f => f.id === fundId);
+    const numericValue = parseFloat(editValue);
+
+    if (originalFund && originalFund[field] !== numericValue && !isNaN(numericValue)) {
+      const updatedFund = {
+        ...originalFund,
+        [field]: numericValue,
+      };
+
+      // The API for a PUT request might not need the id in the body
+      delete updatedFund.id; 
+      delete updatedFund.createdAt;
+
+      try {
+        const response = await fetch(`http://localhost:3000/api/v1/portfolio/indexfund/${fundId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(updatedFund),
+        });
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+
+        // Refresh data locally for immediate feedback
+        setIndexFunds(indexFunds.map(f =>
+          f.id === fundId ? { ...f, [field]: numericValue } : f
+        ));
+
+      } catch (err) {
+        console.error('Error updating index fund:', err);
+        setError(err.message);
+        // Optionally revert state on error
+      }
+    }
+
+    setEditingCell(null);
+    setEditValue('');
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.target.blur();
     }
   };
 
@@ -159,8 +220,35 @@ const IndexFunds = ({ onBack }) => {
                 <tr key={fund.id}>
                   <td className="bank-name">{fund.fundHolder}</td>
                   <td>{fund.fundType}</td>
-                  <td>{formatNumber(fund.amount)}</td>
-                  <td className="interest-rate">{formatPercent(fund.rate)}</td>
+                  <td onClick={() => handleCellClick(fund, 'amount')}>
+                    {editingCell?.fundId === fund.id && editingCell?.field === 'amount' ? (
+                      <input
+                        type="number"
+                        value={editValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
+                        autoFocus
+                      />
+                    ) : (
+                      formatNumber(fund.amount)
+                    )}
+                  </td>
+                  <td className="interest-rate" onClick={() => handleCellClick(fund, 'rate')}>
+                    {editingCell?.fundId === fund.id && editingCell?.field === 'rate' ? (
+                       <input
+                        type="number"
+                        step="0.01"
+                        value={editValue}
+                        onChange={handleInputChange}
+                        onBlur={handleInputBlur}
+                        onKeyDown={handleKeyDown}
+                        autoFocus
+                      />
+                    ) : (
+                      formatPercent(fund.rate)
+                    )}
+                  </td>
                   <td>{new Date(fund.createdAt).toLocaleDateString()}</td>
                 </tr>
               ))}
