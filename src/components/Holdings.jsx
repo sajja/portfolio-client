@@ -157,6 +157,10 @@ const Holdings = ({ onBack }) => {
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
   };
 
+  const formatPositionSizing = (percent) => {
+    return `${percent.toFixed(2)}%`;
+  };
+
   // Helper function to determine CSS class based on gain percentage
   const getGainLossClass = (gainLoss, gainLossPercent) => {
     if (gainLoss < 0) {
@@ -299,24 +303,32 @@ const Holdings = ({ onBack }) => {
                 <th>Market Value</th>
                 <th>Gain/Loss</th>
                 <th>%</th>
+                <th>PS</th>
               </tr>
             </thead>
             <tbody>
-              {holdings.map((holding) => (
-                <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
-                  <td className="symbol">{holding.symbol}</td>
-                  <td>{holding.shares.toLocaleString()}</td>
-                  <td>{formatCurrency(holding.avgPrice)}</td>
-                  <td>{formatCurrency(holding.currentPrice)}</td>
-                  <td>{formatCurrency(holding.marketValue)}</td>
-                  <td className={`gain-loss ${getGainLossClass(holding.gainLoss, holding.gainLossPercent)}`}>
-                    {formatCurrency(holding.gainLoss)}
-                  </td>
-                  <td className={`gain-loss ${getGainLossClass(holding.gainLoss, holding.gainLossPercent)}`}>
-                    {formatPercent(holding.gainLossPercent)}
-                  </td>
-                </tr>
-              ))}
+              {holdings.map((holding) => {
+                const originalInvestment = holding.shares * holding.avgPrice;
+                const totalOriginalInvestment = totalMarketValue - totalGainLoss;
+                const positionSizing = totalOriginalInvestment > 0 ? (originalInvestment / totalOriginalInvestment) * 100 : 0;
+
+                return (
+                  <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
+                    <td className="symbol">{holding.symbol}</td>
+                    <td>{holding.shares}</td>
+                    <td>{formatCurrency(holding.avgPrice)}</td>
+                    <td>{formatCurrency(holding.currentPrice)}</td>
+                    <td>{formatCurrency(holding.marketValue)}</td>
+                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)}>
+                      {formatCurrency(holding.gainLoss)}
+                    </td>
+                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)}>
+                      {formatPercent(holding.gainLossPercent)}
+                    </td>
+                    <td className={positionSizing > 10 ? 'ps-high' : ''}>{formatPositionSizing(positionSizing)}</td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

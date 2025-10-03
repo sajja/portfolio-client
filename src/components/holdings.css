@@ -196,6 +196,11 @@
   max-width: 200px;
 }
 
+.ps-high {
+  color: red;
+  font-weight: bold;
+}
+
 /* Action Card and Buttons */
 .action-card {
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
@@ -397,6 +402,53 @@
 
 .tab-content {
   min-height: 400px;
+}
+
+/* Compact Asset Allocation */
+.compact-allocation {
+  background: #f8f9fa;
+  padding: 1.5rem;
+  border-radius: 8px;
+  height: 100%;
+}
+
+.compact-allocation h3 {
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+  color: #2c3e50;
+  font-size: 1.2rem;
+}
+
+.allocation-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.allocation-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
+}
+
+.allocation-list .asset-type {
+  font-weight: 500;
+  color: #495057;
+  font-size: 0.9rem;
+}
+
+.allocation-list .allocation-value {
+  font-weight: 600;
+  color: #2c3e50;
+  font-size: 0.95rem;
+}
+
+.allocation-list .allocation-bar {
+  height: 6px;
 }
 
 /* Overview Tab Styles */

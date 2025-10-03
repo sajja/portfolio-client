@@ -203,95 +203,55 @@ const Portfolio = () => {
             </div>
             
             {/* Asset Allocation */}
-            <div className="asset-allocation">
+            <div className="asset-allocation compact-allocation">
               <h3>Asset Allocation</h3>
-              <div className="allocation-grid">
-                <div className="allocation-item">
-                  <div className="allocation-header">
+              <ul className="allocation-list">
+                <li>
+                  <div className="allocation-list-item">
                     <span className="asset-type">Equity Holdings</span>
-                    <span className="allocation-percent">{formatPercent(equityAllocation)}</span>
-                  </div>
-                  <div className="allocation-bar">
-                    <div 
-                      className="allocation-fill equity-fill" 
-                      style={{ width: `${equityAllocation}%` }}
-                    ></div>
-                  </div>
-                  <div className="allocation-details">
                     <span className="allocation-value">{formatNumber(portfolioData.equity.value)}</span>
-                    <span className="allocation-count">{portfolioData.equity.count} holdings</span>
                   </div>
-                </div>
-                
-                <div className="allocation-item">
-                  <div className="allocation-header">
+                  <div className="allocation-bar">
+                    <div className="allocation-fill equity-fill" style={{ width: `${equityAllocation}%` }}></div>
+                  </div>
+                </li>
+                <li>
+                  <div className="allocation-list-item">
                     <span className="asset-type">Fixed Deposits</span>
-                    <span className="allocation-percent">{formatPercent(fdAllocation)}</span>
-                  </div>
-                  <div className="allocation-bar">
-                    <div 
-                      className="allocation-fill fd-fill" 
-                      style={{ width: `${fdAllocation}%` }}
-                    ></div>
-                  </div>
-                  <div className="allocation-details">
                     <span className="allocation-value">{formatNumber(portfolioData.fixedDeposits.value)}</span>
-                    <span className="allocation-count">{portfolioData.fixedDeposits.count} deposits</span>
                   </div>
-                </div>
-                
-                <div className="allocation-item">
-                  <div className="allocation-header">
+                  <div className="allocation-bar">
+                    <div className="allocation-fill fd-fill" style={{ width: `${fdAllocation}%` }}></div>
+                  </div>
+                </li>
+                <li>
+                  <div className="allocation-list-item">
                     <span className="asset-type">Index Funds</span>
-                    <span className="allocation-percent">{formatPercent(indexFundsAllocation)}</span>
-                  </div>
-                  <div className="allocation-bar">
-                    <div 
-                      className="allocation-fill index-funds-fill" 
-                      style={{ width: `${indexFundsAllocation}%` }}
-                    ></div>
-                  </div>
-                  <div className="allocation-details">
                     <span className="allocation-value">{formatNumber(portfolioData.indexFunds.value)}</span>
-                    <span className="allocation-count">{portfolioData.indexFunds.count} funds</span>
                   </div>
-                </div>
-                
-                <div className="allocation-item">
-                  <div className="allocation-header">
+                  <div className="allocation-bar">
+                    <div className="allocation-fill index-funds-fill" style={{ width: `${indexFundsAllocation}%` }}></div>
+                  </div>
+                </li>
+                <li>
+                  <div className="allocation-list-item">
                     <span className="asset-type">Other Income</span>
-                    <span className="allocation-percent">{formatPercent(otherIncomeAllocation)}</span>
-                  </div>
-                  <div className="allocation-bar">
-                    <div 
-                      className="allocation-fill other-income-fill" 
-                      style={{ width: `${otherIncomeAllocation}%` }}
-                    ></div>
-                  </div>
-                  <div className="allocation-details">
                     <span className="allocation-value">{formatNumber(portfolioData.otherIncome.value)}</span>
-                    <span className="allocation-count">{portfolioData.otherIncome.count} sources</span>
-                  </div>
-                </div>
-                
-                <div className="allocation-item">
-                  <div className="allocation-header">
-                    <span className="asset-type">FX Deposits</span>
-                    <span className="allocation-percent">{formatPercent(fxAllocation)}</span>
                   </div>
                   <div className="allocation-bar">
-                    <div 
-                      className="allocation-fill fx-fill" 
-                      style={{ width: `${fxAllocation}%` }}
-                    ></div>
+                    <div className="allocation-fill other-income-fill" style={{ width: `${otherIncomeAllocation}%` }}></div>
                   </div>
-                  <div className="allocation-details">
+                </li>
+                <li>
+                  <div className="allocation-list-item">
+                    <span className="asset-type">FX Deposits</span>
                     <span className="allocation-value">{formatCurrency(portfolioData.fx.value)}</span>
-                    {usdToLkrRate && <span className="lkr-value">{formatLKR(portfolioData.fx.value * usdToLkrRate)}</span>}
-                    <span className="allocation-count">{portfolioData.fx.count} deposits</span>
                   </div>
-                </div>
-              </div>
+                  <div className="allocation-bar">
+                    <div className="allocation-fill fx-fill" style={{ width: `${fxAllocation}%` }}></div>
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
 
