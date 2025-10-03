@@ -209,6 +209,7 @@ const Portfolio = () => {
                 <li>
                   <div className="allocation-list-item">
                     <span className="asset-type">Equity Holdings</span>
+                    <span className="allocation-percent">{formatPercent(equityAllocation)}</span>
                     <span className="allocation-value">{formatNumber(portfolioData.equity.value)}</span>
                   </div>
                   <div className="allocation-bar">
@@ -218,6 +219,7 @@ const Portfolio = () => {
                 <li>
                   <div className="allocation-list-item">
                     <span className="asset-type">Fixed Deposits</span>
+                    <span className="allocation-percent">{formatPercent(fdAllocation)}</span>
                     <span className="allocation-value">{formatNumber(portfolioData.fixedDeposits.value)}</span>
                   </div>
                   <div className="allocation-bar">
@@ -227,6 +229,7 @@ const Portfolio = () => {
                 <li>
                   <div className="allocation-list-item">
                     <span className="asset-type">Index Funds</span>
+                    <span className="allocation-percent">{formatPercent(indexFundsAllocation)}</span>
                     <span className="allocation-value">{formatNumber(portfolioData.indexFunds.value)}</span>
                   </div>
                   <div className="allocation-bar">
@@ -236,6 +239,7 @@ const Portfolio = () => {
                 <li>
                   <div className="allocation-list-item">
                     <span className="asset-type">Other Income</span>
+                    <span className="allocation-percent">{formatPercent(otherIncomeAllocation)}</span>
                     <span className="allocation-value">{formatNumber(portfolioData.otherIncome.value)}</span>
                   </div>
                   <div className="allocation-bar">
@@ -245,6 +249,7 @@ const Portfolio = () => {
                 <li>
                   <div className="allocation-list-item">
                     <span className="asset-type">FX Deposits</span>
+                    <span className="allocation-percent">{formatPercent(fxAllocation)}</span>
                     <span className="allocation-value">{formatCurrency(portfolioData.fx.value)}</span>
                   </div>
                   <div className="allocation-bar">
