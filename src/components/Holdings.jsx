@@ -167,12 +167,14 @@ const Holdings = ({ onBack }) => {
       return 'negative';
     } else if (gainLossPercent >= 100) {
       return 'exceptional-appreciation';
+    } else if (gainLossPercent >= 60) {
+      return 'strong-positive';
     } else if (gainLossPercent >= 50) {
       return 'very-high-appreciation';
     } else if (gainLossPercent >= 30) {
       return 'high-appreciation';
-    } else if (gainLossPercent > 0) {
-      return 'light-appreciation';
+    } else if (gainLossPercent > 0 && gainLossPercent < 30) {
+      return 'low-appreciation';
     } else {
       return 'positive';
     }

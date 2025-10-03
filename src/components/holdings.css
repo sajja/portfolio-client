@@ -64,6 +64,30 @@
   color: #e74c3c;
 }
 
+.low-appreciation {
+  color: #5cacee;
+}
+
+.high-appreciation {
+  color: #00008B; /* Dark Blue */
+}
+
+.exceptional-appreciation {
+  color: darkgreen;
+}
+
+.strong-positive {
+  color: green;
+}
+
+.positive {
+  color: #27ae60;
+}
+
+.negative {
+  color: #e74c3c;
+}
+
 .back-button {
   background: #3498db;
   color: white;
