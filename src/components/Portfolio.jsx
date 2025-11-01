@@ -4,6 +4,7 @@ import FixedDeposits from './FixedDeposits';
 import IndexFunds from './IndexFunds';
 import FXAccounts from './FXAccounts';
 import OtherIncome from './OtherIncome';
+import Bonds from './Bonds';
 import './holdings.css';
 
 const Portfolio = () => {
@@ -13,7 +14,8 @@ const Portfolio = () => {
     fixedDeposits: { value: 0, count: 0 },
     fx: { value: 0, count: 0 },
     indexFunds: { value: 0, count: 0 },
-    otherIncome: { value: 0, count: 0 }
+    otherIncome: { value: 0, count: 0 },
+    bonds: { value: 0, count: 0 }
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -24,12 +26,13 @@ const Portfolio = () => {
       setLoading(true);
       
       // Fetch all portfolio data in parallel
-      const [equityResponse, fdResponse, fxResponse, indexFundsResponse, otherIncomeResponse, ratesResponse] = await Promise.all([
+      const [equityResponse, fdResponse, fxResponse, indexFundsResponse, otherIncomeResponse, bondsResponse, ratesResponse] = await Promise.all([
         fetch('http://localhost:3000/api/v1/portfolio/equity').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/fd').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/fx').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/indexfund').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/other-income').catch(() => ({ ok: false })),
+        fetch('http://localhost:3000/api/v1/portfolio/bonds').catch(() => ({ ok: false })),
         fetch('http://localhost:3000/api/v1/portfolio/util/rates/usd').catch(() => ({ ok: false }))
       ]);
       
@@ -38,6 +41,7 @@ const Portfolio = () => {
       let fxData = { fxDeposits: [] };
       let indexFundsData = { indexFunds: [] };
       let otherIncomeData = { incomes: [] };
+      let bondsData = { bonds: [] };
       
       if (equityResponse.ok) {
         equityData = await equityResponse.json();
@@ -57,6 +61,10 @@ const Portfolio = () => {
       
       if (otherIncomeResponse.ok) {
         otherIncomeData = await otherIncomeResponse.json();
+      }
+
+      if (bondsResponse.ok) {
+        bondsData = await bondsResponse.json();
       }
 
       if (ratesResponse.ok) {
@@ -89,6 +97,11 @@ const Portfolio = () => {
         return sum + (income.amount || income.value || 0);
       }, 0);
       
+      // Calculate bonds value
+      const bondsValue = (bondsData.bonds || []).reduce((sum, bond) => {
+        return sum + (bond.currentValue || bond.faceValue || bond.amount || 0);
+      }, 0);
+      
       setPortfolioData({
         equity: { 
           value: equityValue, 
@@ -109,6 +122,10 @@ const Portfolio = () => {
         otherIncome: {
           value: otherIncomeValue,
           count: (otherIncomeData.incomes || []).length
+        },
+        bonds: {
+          value: bondsValue,
+          count: (bondsData.bonds || []).length
         }
       });
     } catch (err) {
@@ -150,13 +167,14 @@ const Portfolio = () => {
 
   // Calculate totals and allocations
   const fxValueInLKR = portfolioData.fx.value * (usdToLkrRate || 0);
-  const totalPortfolioValueInLKR = portfolioData.equity.value + portfolioData.fixedDeposits.value + fxValueInLKR + portfolioData.indexFunds.value + portfolioData.otherIncome.value;
+  const totalPortfolioValueInLKR = portfolioData.equity.value + portfolioData.fixedDeposits.value + fxValueInLKR + portfolioData.indexFunds.value + portfolioData.otherIncome.value + portfolioData.bonds.value;
 
   const equityAllocation = totalPortfolioValueInLKR > 0 ? (portfolioData.equity.value / totalPortfolioValueInLKR) * 100 : 0;
   const fdAllocation = totalPortfolioValueInLKR > 0 ? (portfolioData.fixedDeposits.value / totalPortfolioValueInLKR) * 100 : 0;
   const fxAllocation = totalPortfolioValueInLKR > 0 ? (fxValueInLKR / totalPortfolioValueInLKR) * 100 : 0;
   const indexFundsAllocation = totalPortfolioValueInLKR > 0 ? (portfolioData.indexFunds.value / totalPortfolioValueInLKR) * 100 : 0;
   const otherIncomeAllocation = totalPortfolioValueInLKR > 0 ? (portfolioData.otherIncome.value / totalPortfolioValueInLKR) * 100 : 0;
+  const bondsAllocation = totalPortfolioValueInLKR > 0 ? (portfolioData.bonds.value / totalPortfolioValueInLKR) * 100 : 0;
 
   if (currentView === 'holdings') {
     return <Holdings onBack={() => setCurrentView('portfolio')} />;
@@ -176,6 +194,10 @@ const Portfolio = () => {
 
   if (currentView === 'other-income') {
     return <OtherIncome onBack={() => setCurrentView('portfolio')} />;
+  }
+
+  if (currentView === 'bonds') {
+    return <Bonds onBack={() => setCurrentView('portfolio')} />;
   }
 
   return (
@@ -248,6 +270,16 @@ const Portfolio = () => {
                 </li>
                 <li>
                   <div className="allocation-list-item">
+                    <span className="asset-type">Bonds & Debentures</span>
+                    <span className="allocation-percent">{formatPercent(bondsAllocation)}</span>
+                    <span className="allocation-value">{formatNumber(portfolioData.bonds.value)}</span>
+                  </div>
+                  <div className="allocation-bar">
+                    <div className="allocation-fill bonds-fill" style={{ width: `${bondsAllocation}%` }}></div>
+                  </div>
+                </li>
+                <li>
+                  <div className="allocation-list-item">
                     <span className="asset-type">FX Deposits</span>
                     <span className="allocation-percent">{formatPercent(fxAllocation)}</span>
                     <span className="allocation-value">{formatCurrency(portfolioData.fx.value)}</span>
@@ -309,6 +341,16 @@ const Portfolio = () => {
                 <span className="stat-count">{portfolioData.otherIncome.count} sources</span>
                 <span className="stat-value">{formatNumber(portfolioData.otherIncome.value)}</span>
                 <span className="stat-change">{formatPercent(otherIncomeAllocation)} of portfolio</span>
+              </div>
+              <span className="click-hint">Click to view →</span>
+            </div>
+            
+            <div className="stat-card" onClick={() => setCurrentView('bonds')}>
+              <h4>Bonds & Debentures</h4>
+              <div className="stat-numbers">
+                <span className="stat-count">{portfolioData.bonds.count} instruments</span>
+                <span className="stat-value">{formatNumber(portfolioData.bonds.value)}</span>
+                <span className="stat-change">{formatPercent(bondsAllocation)} of portfolio</span>
               </div>
               <span className="click-hint">Click to view →</span>
             </div>

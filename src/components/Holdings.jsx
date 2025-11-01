@@ -17,6 +17,8 @@ const Holdings = ({ onBack }) => {
   const [showDividendModal, setShowDividendModal] = useState(false);
   const [showDividendInfoModal, setShowDividendInfoModal] = useState(false);
   const [selectedStock, setSelectedStock] = useState(null);
+  const [editingComment, setEditingComment] = useState(null);
+  const [commentValue, setCommentValue] = useState('');
 
   const fetchData = async () => {
     try {
@@ -129,6 +131,57 @@ const Holdings = ({ onBack }) => {
 
   const handleDividendInfoModalClose = () => {
     setShowDividendInfoModal(false);
+  };
+
+  // Comment editing functions
+  const handleCommentEdit = (symbol, currentComment) => {
+    setEditingComment(symbol);
+    setCommentValue(currentComment || '');
+  };
+
+  const handleCommentSave = async (symbol) => {
+    try {
+      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${symbol}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ comment: commentValue })
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      // Update local state
+      setHoldings(prev => 
+        prev.map(holding => 
+          holding.symbol === symbol 
+            ? { ...holding, comment: commentValue }
+            : holding
+        )
+      );
+
+      setEditingComment(null);
+      setCommentValue('');
+    } catch (error) {
+      console.error('Error saving comment:', error);
+      alert('Failed to save comment. Please try again.');
+    }
+  };
+
+  const handleCommentCancel = () => {
+    setEditingComment(null);
+    setCommentValue('');
+  };
+
+  const handleCommentKeyPress = (e, symbol) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      handleCommentSave(symbol);
+    } else if (e.key === 'Escape') {
+      handleCommentCancel();
+    }
   };
 
   // Get profit data from API or use defaults
@@ -306,6 +359,7 @@ const Holdings = ({ onBack }) => {
                 <th>Gain/Loss</th>
                 <th>%</th>
                 <th>PS</th>
+                <th>Notes</th>
               </tr>
             </thead>
             <tbody>
@@ -315,19 +369,61 @@ const Holdings = ({ onBack }) => {
                 const positionSizing = totalOriginalInvestment > 0 ? (originalInvestment / totalOriginalInvestment) * 100 : 0;
 
                 return (
-                  <tr key={holding.id} onClick={() => handleRowClick(holding.symbol)}>
-                    <td className="symbol">{holding.symbol}</td>
-                    <td>{holding.shares}</td>
-                    <td>{formatCurrency(holding.avgPrice)}</td>
-                    <td>{formatCurrency(holding.currentPrice)}</td>
-                    <td>{formatCurrency(holding.marketValue)}</td>
-                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)}>
+                  <tr key={holding.id}>
+                    <td className="symbol" onClick={() => handleRowClick(holding.symbol)}>{holding.symbol}</td>
+                    <td onClick={() => handleRowClick(holding.symbol)}>{holding.shares}</td>
+                    <td onClick={() => handleRowClick(holding.symbol)}>{formatCurrency(holding.avgPrice)}</td>
+                    <td onClick={() => handleRowClick(holding.symbol)}>{formatCurrency(holding.currentPrice)}</td>
+                    <td onClick={() => handleRowClick(holding.symbol)}>{formatCurrency(holding.marketValue)}</td>
+                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)} onClick={() => handleRowClick(holding.symbol)}>
                       {formatCurrency(holding.gainLoss)}
                     </td>
-                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)}>
+                    <td className={getGainLossClass(holding.gainLoss, holding.gainLossPercent)} onClick={() => handleRowClick(holding.symbol)}>
                       {formatPercent(holding.gainLossPercent)}
                     </td>
-                    <td className={positionSizing > 10 ? 'ps-high' : ''}>{formatPositionSizing(positionSizing)}</td>
+                    <td className={positionSizing > 10 ? 'ps-high' : ''} onClick={() => handleRowClick(holding.symbol)}>{formatPositionSizing(positionSizing)}</td>
+                    <td className="comment-cell" onClick={(e) => e.stopPropagation()}>
+                      {editingComment === holding.symbol ? (
+                        <div className="comment-edit-container">
+                          <input
+                            type="text"
+                            value={commentValue}
+                            onChange={(e) => setCommentValue(e.target.value)}
+                            onKeyDown={(e) => handleCommentKeyPress(e, holding.symbol)}
+                            onBlur={() => handleCommentSave(holding.symbol)}
+                            placeholder="Add a note..."
+                            className="comment-input"
+                            autoFocus
+                          />
+                          <div className="comment-actions">
+                            <button 
+                              onClick={() => handleCommentSave(holding.symbol)}
+                              className="comment-save-btn"
+                              title="Save (Enter)"
+                            >
+                              ✓
+                            </button>
+                            <button 
+                              onClick={handleCommentCancel}
+                              className="comment-cancel-btn"
+                              title="Cancel (Esc)"
+                            >
+                              ✕
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div 
+                          className="comment-display"
+                          onClick={() => handleCommentEdit(holding.symbol, holding.comment)}
+                          title="Click to edit note"
+                        >
+                          {holding.comment || (
+                            <span className="comment-placeholder">Add note...</span>
+                          )}
+                        </div>
+                      )}
+                    </td>
                   </tr>
                 );
               })}
