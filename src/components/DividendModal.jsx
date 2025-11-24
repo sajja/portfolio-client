@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import authService from '../services/AuthService';
 import './modal.css';
 
 const DividendModal = ({ isOpen, onClose, holdings }) => {
@@ -42,11 +43,8 @@ const DividendModal = ({ isOpen, onClose, holdings }) => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${dividendForm.symbol.toUpperCase()}/dividend`, {
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/${dividendForm.symbol.toUpperCase()}/dividend`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           amount: parseFloat(dividendForm.amount),
           date: dividendForm.date

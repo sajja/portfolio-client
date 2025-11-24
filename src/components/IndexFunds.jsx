@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './holdings.css';
 import IndexFundModal from './IndexFundModal';
+import authService from '../services/AuthService';
 
 const IndexFunds = ({ onBack }) => {
   const [indexFunds, setIndexFunds] = useState([]);
@@ -14,7 +15,7 @@ const IndexFunds = ({ onBack }) => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/indexfund');
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/indexfund');
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -47,7 +48,7 @@ const IndexFunds = ({ onBack }) => {
 
   const handleSaveFund = async (fundData) => {
     try {
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/indexfund', {
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/indexfund', {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -94,7 +95,7 @@ const IndexFunds = ({ onBack }) => {
       delete updatedFund.createdAt;
 
       try {
-        const response = await fetch(`http://localhost:3000/api/v1/portfolio/indexfund/${fundId}`, {
+        const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/indexfund/${fundId}`, {
           method: 'PUT',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(updatedFund),

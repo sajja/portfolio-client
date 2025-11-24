@@ -4,6 +4,7 @@ import SellModal from './SellModal';
 import TransactionModal from './TransactionModal';
 import DividendModal from './DividendModal';
 import DividendInfoModal from './DividendInfoModal';
+import authService from '../services/AuthService';
 import './holdings.css';
 
 const Holdings = ({ onBack }) => {
@@ -26,8 +27,8 @@ const Holdings = ({ onBack }) => {
       
       // Fetch equity portfolio data
       const [holdingsResponse, summaryResponse] = await Promise.all([
-        fetch('http://localhost:3000/api/v1/portfolio/equity'),
-        fetch('http://localhost:3000/api/v1/portfolio/summary')
+        authService.makeAuthenticatedRequest('api/v1/portfolio/equity'),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/summary')
       ]);
       
       if (!holdingsResponse.ok || !summaryResponse.ok) {
@@ -141,11 +142,8 @@ const Holdings = ({ onBack }) => {
 
   const handleCommentSave = async (symbol) => {
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${symbol}`, {
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/${symbol}`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({ comment: commentValue })
       });
 

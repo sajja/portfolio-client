@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import FixedDepositModal from './FixedDepositModal';
+import authService from '../services/AuthService';
 import './holdings.css';
 
 const FixedDeposits = ({ onBack }) => {
@@ -12,7 +13,7 @@ const FixedDeposits = ({ onBack }) => {
     try {
       setLoading(true);
       
-      const fdResponse = await fetch('http://localhost:3000/api/v1/portfolio/fd');
+      const fdResponse = await authService.makeAuthenticatedRequest('api/v1/portfolio/fd');
       
       if (!fdResponse.ok) {
         throw new Error(`HTTP error! Status: ${fdResponse.status}`);

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import authService from '../services/AuthService';
 import './modal.css';
 
 const TransactionModal = ({ isOpen, onClose, stockSymbol }) => {
@@ -18,7 +19,7 @@ const TransactionModal = ({ isOpen, onClose, stockSymbol }) => {
       setLoading(true);
       setError(null);
       
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${stockSymbol}/transactions`);
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/${stockSymbol}/transactions`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch transactions');

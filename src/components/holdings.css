@@ -400,6 +400,20 @@
   box-shadow: 0 4px 8px rgba(23, 162, 184, 0.4);
 }
 
+.fx-btn {
+  background: linear-gradient(135deg, #6f42c1 0%, #e83e8c 100%);
+  color: white;
+  box-shadow: 0 2px 4px rgba(111, 66, 193, 0.3);
+  padding: 0.75rem 1.5rem;
+  font-size: 0.9rem;
+}
+
+.fx-btn:hover {
+  background: linear-gradient(135deg, #5a32a3 0%, #d91a72 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(111, 66, 193, 0.4);
+}
+
 /* Loading and Error States */
 .loading-container, .error-container {
   text-align: center;
@@ -838,6 +852,35 @@
   color: #6c757d;
 }
 
+/* FX Account Actions */
+.actions-cell {
+  text-align: center;
+  white-space: nowrap;
+}
+
+.fx-table .delete-btn {
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.fx-table .delete-btn:hover {
+  background-color: #c82333;
+  transform: translateY(-1px);
+}
+
+.fx-table .delete-btn:active {
+  transform: translateY(0);
+}
+
 .usd-value {
   font-weight: 600;
   color: #2c3e50;
@@ -893,6 +936,11 @@
   .fx-table th,
   .fx-table td {
     padding: 0.5rem;
+  }
+  
+  .fx-table .delete-btn {
+    padding: 4px 8px;
+    font-size: 0.75rem;
   }
 }
 
@@ -1897,3 +1945,5 @@
     width: 100%;
   }
 }
+
+

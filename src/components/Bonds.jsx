@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import authService from '../services/AuthService';
 import './holdings.css';
 
 // BondModal Component
@@ -88,10 +89,9 @@ const BondModal = ({ onClose }) => {
 
       console.log('Sending bond data:', bondData);
 
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/bonds', {
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/bonds', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
         body: JSON.stringify(bondData)
@@ -303,7 +303,7 @@ const Bonds = ({ onBack }) => {
   const fetchBonds = async () => {
     try {
       setLoading(true);
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/bonds');
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/bonds');
       
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);

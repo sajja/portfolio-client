@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import authService from '../services/AuthService';
 import './modal.css';
 
 const DividendInfoModal = ({ isOpen, onClose, holdings }) => {
@@ -46,9 +47,9 @@ const DividendInfoModal = ({ isOpen, onClose, holdings }) => {
       
       // Fetch data for all three periods
       const [sixMonthData, twelveMonthData, twentyFourMonthData] = await Promise.all([
-        fetch(`http://localhost:3000/api/v1/portfolio/equity/dividends?from_date=${dateRanges.sixMonths.from}&to_date=${dateRanges.sixMonths.to}`),
-        fetch(`http://localhost:3000/api/v1/portfolio/equity/dividends?from_date=${dateRanges.twelveMonths.from}&to_date=${dateRanges.twelveMonths.to}`),
-        fetch(`http://localhost:3000/api/v1/portfolio/equity/dividends?from_date=${dateRanges.twentyFourMonths.from}&to_date=${dateRanges.twentyFourMonths.to}`)
+        authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/dividends?from_date=${dateRanges.sixMonths.from}&to_date=${dateRanges.sixMonths.to}`),
+        authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/dividends?from_date=${dateRanges.twelveMonths.from}&to_date=${dateRanges.twelveMonths.to}`),
+        authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/dividends?from_date=${dateRanges.twentyFourMonths.from}&to_date=${dateRanges.twentyFourMonths.to}`)
       ]);
 
       if (!sixMonthData.ok || !twelveMonthData.ok || !twentyFourMonthData.ok) {

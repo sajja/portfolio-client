@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import authService from '../services/AuthService';
 import './holdings.css';
 
 const OtherIncome = ({ onBack }) => {
@@ -10,7 +11,7 @@ const OtherIncome = ({ onBack }) => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/other-income');
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/other-income');
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);

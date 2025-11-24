@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import toast from 'react-hot-toast';
+import authService from '../services/AuthService';
 import './modal.css';
 
 const SellModal = ({ isOpen, onClose, holdings }) => {
@@ -41,11 +42,8 @@ const SellModal = ({ isOpen, onClose, holdings }) => {
     }
     
     try {
-      const response = await fetch(`http://localhost:3000/api/v1/portfolio/equity/${sellForm.selectedStock}/sell`, {
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/equity/${sellForm.selectedStock}/sell`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify({
           qtty: parseFloat(sellForm.quantity),
           price: parseFloat(sellForm.sellPrice),

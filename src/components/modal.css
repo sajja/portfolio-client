@@ -162,6 +162,141 @@
   color: #6c757d;
 }
 
+/* FX Account Modal Styles */
+.fx-modal {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.fx-modal .modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  padding: 2.5rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  position: relative;
+  animation: slideIn 0.3s ease-out;
+}
+
+.fx-modal h2 {
+  margin: 0 0 2rem 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.fx-modal h2::before {
+  content: '💱';
+  margin-right: 0.5rem;
+}
+
+.fx-modal .form-group {
+  margin-bottom: 1.5rem;
+}
+
+.fx-modal .form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  color: #495057;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.fx-modal .form-group input,
+.fx-modal .form-group select {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.fx-modal .form-group input:focus,
+.fx-modal .form-group select:focus {
+  outline: none;
+  border-color: #007bff;
+  box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+}
+
+.fx-modal .form-group select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+  background-position: right 0.5rem center;
+  background-repeat: no-repeat;
+  background-size: 1.5em 1.5em;
+  padding-right: 2.5rem;
+}
+
+.fx-modal .error-message {
+  background: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+  border-radius: 6px;
+  padding: 0.75rem;
+  margin-bottom: 1rem;
+  font-size: 0.875rem;
+}
+
+.fx-modal .submit-btn {
+  width: 100%;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.fx-modal .submit-btn:hover:not(:disabled) {
+  background: linear-gradient(135deg, #218838 0%, #1e7e34 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 16px rgba(40, 167, 69, 0.3);
+}
+
+.fx-modal .submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.fx-modal .submit-btn:active {
+  transform: translateY(0);
+}
+
+.fx-modal .close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #adb5bd;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.fx-modal .close:hover {
+  color: #6c757d;
+}
+
 .transaction-modal .modal-content {
   width: 95% !important;
   max-width: 1200px !important;
@@ -951,4 +1086,162 @@
 
 .btn-cancel:hover {
   background-color: #c0392b;
+}
+
+/* Delete Confirmation Modal */
+.delete-modal {
+  position: fixed;
+  z-index: 1000;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.delete-modal .modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  width: 90%;
+  max-width: 450px;
+  position: relative;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.delete-modal h2 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-align: center;
+  justify-content: center;
+}
+
+.delete-confirmation {
+  text-align: center;
+}
+
+.delete-confirmation > p {
+  margin-bottom: 1.5rem;
+  color: #495057;
+  font-size: 1.1rem;
+}
+
+.delete-modal .account-details {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 1rem;
+  margin: 1.5rem 0;
+  text-align: left;
+}
+
+.delete-modal .account-details .form-group {
+  margin-bottom: 0.75rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.delete-modal .account-details .form-group:last-child {
+  margin-bottom: 0;
+}
+
+.delete-modal .account-details label {
+  font-weight: 600;
+  color: #34495e;
+  margin-bottom: 0;
+}
+
+.delete-modal .account-details span {
+  font-family: monospace;
+  font-size: 0.95rem;
+  color: #2c3e50;
+}
+
+.delete-modal .warning-text {
+  color: #dc3545;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+  background: #fff5f5;
+  border: 1px solid #fed7d7;
+  border-radius: 6px;
+  padding: 0.75rem;
+}
+
+.delete-modal .warning-text p {
+  margin: 0;
+}
+
+.delete-modal .modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.btn-delete {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  background-color: #e74c3c;
+  color: white;
+}
+
+.btn-delete:hover:not(:disabled) {
+  background-color: #c0392b;
+}
+
+.btn-delete:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.delete-modal .close {
+  position: absolute;
+  top: 1rem;
+  right: 1.5rem;
+  font-size: 2rem;
+  font-weight: bold;
+  color: #adb5bd;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.delete-modal .close:hover {
+  color: #6c757d;
+}
+
+/* Delete Modal Responsive */
+@media (max-width: 768px) {
+  .delete-modal .modal-content {
+    width: 95%;
+    margin: 10px;
+    padding: 1.5rem;
+  }
+  
+  .delete-modal .modal-actions {
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .delete-modal .btn-delete,
+  .delete-modal .btn-cancel {
+    width: 100%;
+  }
 }

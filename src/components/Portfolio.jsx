@@ -5,6 +5,7 @@ import IndexFunds from './IndexFunds';
 import FXAccounts from './FXAccounts';
 import OtherIncome from './OtherIncome';
 import Bonds from './Bonds';
+import authService from '../services/AuthService';
 import './holdings.css';
 
 const Portfolio = () => {
@@ -27,13 +28,13 @@ const Portfolio = () => {
       
       // Fetch all portfolio data in parallel
       const [equityResponse, fdResponse, fxResponse, indexFundsResponse, otherIncomeResponse, bondsResponse, ratesResponse] = await Promise.all([
-        fetch('http://localhost:3000/api/v1/portfolio/equity').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/fd').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/fx').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/indexfund').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/other-income').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/bonds').catch(() => ({ ok: false })),
-        fetch('http://localhost:3000/api/v1/portfolio/util/rates/usd').catch(() => ({ ok: false }))
+        authService.makeAuthenticatedRequest('api/v1/portfolio/equity').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/fd').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/fx').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/indexfund').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/other-income').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/bonds').catch(() => ({ ok: false })),
+        authService.makeAuthenticatedRequest('api/v1/portfolio/util/rates/usd').catch(() => ({ ok: false }))
       ]);
       
       let equityData = { stocks: [] };

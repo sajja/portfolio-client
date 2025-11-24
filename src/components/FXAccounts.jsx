@@ -1,16 +1,24 @@
 import React, { useState, useEffect } from 'react';
+import authService from '../services/AuthService';
+import FXAccountModal from './FXAccountModal';
 import './holdings.css';
 
 const FXAccounts = ({ onBack }) => {
   const [fxAccounts, setFxAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [accountToDelete, setAccountToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAccount, setEditingAccount] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const fetchFXAccounts = async () => {
     try {
       setLoading(true);
       
-      const response = await fetch('http://localhost:3000/api/v1/portfolio/fx');
+      const response = await authService.makeAuthenticatedRequest('api/v1/portfolio/fx');
       
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
@@ -36,6 +44,103 @@ const FXAccounts = ({ onBack }) => {
       setError(err.message);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleDeleteClick = (account) => {
+    setAccountToDelete(account);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setAccountToDelete(null);
+    setIsDeleting(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!accountToDelete) return;
+
+    setIsDeleting(true);
+
+    try {
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/fx/${accountToDelete.id}`, {
+        method: 'DELETE'
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete FX account: ${response.status}`);
+      }
+
+      // Remove the account from local state
+      setFxAccounts(prevAccounts => 
+        prevAccounts.filter(account => account.id !== accountToDelete.id)
+      );
+
+      console.log(`Successfully deleted FX account ${accountToDelete.id}`);
+      
+      // Close modal and reset state
+      setShowDeleteModal(false);
+      setAccountToDelete(null);
+    } catch (error) {
+      console.error('Error deleting FX account:', error);
+      alert(`Failed to delete FX account: ${error.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
+  };
+
+  const openModal = (account = null) => {
+    setEditingAccount(account);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = (shouldRefetch = false) => {
+    setIsModalOpen(false);
+    setEditingAccount(null);
+    setIsLoading(false);
+    setError(null);
+    
+    if (shouldRefetch) {
+      fetchFXAccounts();
+    }
+  };
+
+  const handleSubmit = async (fxData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      let response;
+      if (editingAccount) {
+        // Update existing account
+        response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/fx/${editingAccount.id}`, {
+          method: 'POST',
+          body: JSON.stringify(fxData),
+        });
+      } else {
+        // Create new account
+        response = await authService.makeAuthenticatedRequest('api/v1/portfolio/fx', {
+          method: 'PUT',
+          body: JSON.stringify(fxData),
+        });
+      }
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || `Failed to ${editingAccount ? 'update' : 'create'} FX account`);
+      }
+
+      const result = await response.json();
+      console.log('FX account operation successful:', result);
+      
+      // Close modal and refresh data
+      closeModal(true);
+      
+    } catch (error) {
+      console.error('Error with FX account operation:', error);
+      setError(error.message);
+      setIsLoading(false);
     }
   };
 
@@ -88,10 +193,16 @@ const FXAccounts = ({ onBack }) => {
   return (
     <div className="holdings-container">
       <div className="holdings-header">
-        <button className="back-button" onClick={onBack}>
-          ← Back to Portfolio
+        <div className="header-left">
+          <button className="back-button" onClick={onBack}>
+            ← Back to Portfolio
+          </button>
+          <h2>FX Deposits</h2>
+        </div>
+        <button className="action-btn fx-btn" onClick={() => openModal()}>
+          <span className="btn-icon">💱</span>
+          Add FX Account
         </button>
-        <h2>FX Deposits</h2>
       </div>
 
       {/* FX Accounts Summary */}
@@ -126,6 +237,7 @@ const FXAccounts = ({ onBack }) => {
                 <th>Interest Rate</th>
                 <th>Date</th>
                 <th>Created At</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -137,6 +249,15 @@ const FXAccounts = ({ onBack }) => {
                   <td className="interest-rate">{account.interestRate.toFixed(2)}%</td>
                   <td>{account.date ? new Date(account.date).toLocaleDateString() : 'N/A'}</td>
                   <td>{account.createdAt ? new Date(account.createdAt).toLocaleDateString() : 'N/A'}</td>
+                  <td className="actions-cell">
+                    <button
+                      onClick={() => handleDeleteClick(account)}
+                      className="delete-btn"
+                      title="Delete FX Account"
+                    >
+                      🗑️ Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -148,8 +269,84 @@ const FXAccounts = ({ onBack }) => {
           <small>Add your first foreign exchange deposit to get started</small>
         </div>
       )}
+
+      {/* Add/Edit FX Account Modal */}
+      <FXAccountModal
+        isOpen={isModalOpen}
+        onClose={closeModal}
+        onSubmit={handleSubmit}
+        editingAccount={editingAccount}
+        isLoading={isLoading}
+        error={error}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        accountInfo={accountToDelete}
+        isDeleting={isDeleting}
+      />
     </div>
   );
-};
+}
+
+// Delete Confirmation Modal Component
+const DeleteConfirmationModal = ({ isOpen, onCancel, onConfirm, accountInfo, isDeleting }) => {
+  if (!isOpen || !accountInfo) return null;
+
+  return (
+    <div className="delete-modal">
+      <div className="modal-content">
+        <span className="close" onClick={onCancel}>&times;</span>
+        <h2>🗑️ Confirm Delete</h2>
+        
+        <div className="delete-confirmation">
+          <p>Are you sure you want to delete this FX account?</p>
+          
+          <div className="account-details">
+            <div className="form-group">
+              <label>Bank:</label>
+              <span>{accountInfo.bank}</span>
+            </div>
+            <div className="form-group">
+              <label>Currency:</label>
+              <span>{accountInfo.currency}</span>
+            </div>
+            <div className="form-group">
+              <label>Amount:</label>
+              <span>{accountInfo.amount} {accountInfo.currency}</span>
+            </div>
+          </div>
+          
+          <div className="warning-text">
+            <span>⚠️</span>
+            <p>This action cannot be undone.</p>
+          </div>
+        </div>
+        
+        <div className="modal-actions">
+          <button 
+            type="button" 
+            onClick={onCancel}
+            className="btn-cancel"
+            disabled={isDeleting}
+          >
+            Cancel
+          </button>
+          <button 
+            type="button" 
+            onClick={onConfirm}
+            className="btn-delete"
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Account'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};;
 
 export default FXAccounts;
