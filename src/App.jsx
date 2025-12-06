@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import Portfolio from './components/Portfolio';
 import Home from './components/Home';
 import Notifications from './components/Notifications';
-import { Toaster } from 'react-hot-toast';
+import ExpenseReport from './components/ExpenseReport';
+import { Toaster, toast } from 'react-hot-toast';
 import authService from './services/AuthService';
 
 const App = () => {
@@ -112,7 +113,7 @@ const App = () => {
         {activeMenu === 'home' && <Home />}
         {activeMenu === 'portfolio' && <Portfolio />}
         {activeMenu === 'expense-admin' && <div><h2>Expense Admin</h2><p>Expense Admin content coming soon...</p></div>}
-        {activeMenu === 'expense-report' && <div><h2>Expense Report</h2><p>Expense Report content coming soon...</p></div>}
+        {activeMenu === 'expense-report' && <ExpenseReport />}
         {activeMenu === 'notifications' && <Notifications />}
       </main>
     </div>

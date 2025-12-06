@@ -1899,6 +1899,343 @@
   min-width: 120px;
 }
 
+/* Expense Report Styles */
+.expense-ribbon {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.ribbon-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 2px solid #e9ecef;
+  border-radius: 16px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.ribbon-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3498db;
+}
+
+.ribbon-card.active {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  border-color: #2980b9;
+  color: white;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 30px rgba(52, 152, 219, 0.3);
+}
+
+.ribbon-card.active .ribbon-icon {
+  filter: brightness(0) invert(1);
+}
+
+.ribbon-card.active .ribbon-content h3,
+.ribbon-card.active .ribbon-content p,
+.ribbon-card.active .ribbon-content small {
+  color: white;
+}
+
+.ribbon-icon {
+  font-size: 2.5rem;
+  opacity: 0.8;
+  transition: all 0.3s ease;
+}
+
+.ribbon-content {
+  flex: 1;
+}
+
+.ribbon-content h3 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.ribbon-amount {
+  font-size: 1.8rem;
+  font-weight: bold;
+  margin: 0.5rem 0;
+  color: #2c3e50;
+  font-family: 'Segoe UI', monospace;
+}
+
+.ribbon-content small {
+  color: #6c757d;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* Expense Categories */
+.expense-categories {
+  margin: 2rem 0;
+}
+
+.expense-categories h3 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.category-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+
+.category-card {
+  background: white;
+  border: 1px solid #e9ecef;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.category-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #3498db;
+}
+
+.category-card.selected {
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+  border: 2px solid #2196f3;
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+  transform: translateY(-2px);
+}
+
+.category-card.selected .category-rank {
+  background: linear-gradient(135deg, #2196f3 0%, #1976d2 100%);
+}
+
+.selected-category-info {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  background: linear-gradient(135deg, #e8f5e9 0%, #f1f8f4 100%);
+  border: 1px solid #4caf50;
+  border-radius: 6px;
+  font-size: 0.95rem;
+  color: #2e7d32;
+}
+
+.selected-category-info .clear-filter:hover {
+  opacity: 0.8;
+}
+
+.category-rank {
+  background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+  color: white;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+.category-info {
+  flex: 1;
+}
+
+.category-info h4 {
+  margin: 0 0 0.25rem 0;
+  color: #2c3e50;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.category-amount {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: #e74c3c;
+  margin: 0;
+  font-family: 'Segoe UI', monospace;
+}
+
+/* Expense Table */
+.expense-table-section {
+  margin: 2rem 0;
+}
+
+.expense-table-section h3 {
+  color: #2c3e50;
+  margin-bottom: 1.5rem;
+  font-size: 1.3rem;
+  border-bottom: 2px solid #e9ecef;
+  padding-bottom: 0.5rem;
+}
+
+.expense-table-container {
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+.expense-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.expense-table th,
+.expense-table td {
+  padding: 1rem 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #e9ecef;
+  font-size: 0.9rem;
+}
+
+.expense-table th {
+  background: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
+  position: sticky;
+  top: 0;
+}
+
+.expense-table tbody tr {
+  transition: background-color 0.2s ease;
+}
+
+.expense-table tbody tr:hover {
+  background-color: #f8f9fa;
+}
+
+.expense-description {
+  max-width: 300px;
+  word-wrap: break-word;
+  color: #2c3e50;
+  font-weight: 500;
+}
+
+.expense-category {
+  background: #e9ecef;
+  color: #495057;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  display: inline-block;
+}
+
+.expense-amount {
+  font-weight: 600;
+  color: #e74c3c;
+  font-family: 'Segoe UI', monospace;
+  text-align: right;
+}
+
+/* Loading Spinner for Expense Report */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #e9ecef;
+  border-left: 4px solid #3498db;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-container p {
+  color: #6c757d;
+  font-size: 1.1rem;
+  margin: 0;
+}
+
+/* Expense Report Responsive Design */
+@media (max-width: 768px) {
+  .expense-ribbon {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .ribbon-card {
+    padding: 1rem;
+    flex-direction: column;
+    text-align: center;
+    gap: 0.75rem;
+  }
+  
+  .ribbon-icon {
+    font-size: 2rem;
+  }
+  
+  .ribbon-amount {
+    font-size: 1.5rem;
+  }
+  
+  .category-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .category-card {
+    padding: 0.75rem;
+  }
+  
+  .expense-table {
+    font-size: 0.8rem;
+  }
+  
+  .expense-table th,
+  .expense-table td {
+    padding: 0.5rem 0.25rem;
+  }
+  
+  .expense-description {
+    max-width: 150px;
+  }
+}
+
+@media (max-width: 480px) {
+  .expense-table-container {
+    overflow-x: auto;
+  }
+  
+  .expense-table {
+    min-width: 500px;
+  }
+  
+  .ribbon-amount {
+    font-size: 1.3rem;
+  }
+  
+  .ribbon-content h3 {
+    font-size: 1rem;
+  }
+}
+
 .bond-form .cancel-btn {
   background-color: #6c757d;
   color: white;
