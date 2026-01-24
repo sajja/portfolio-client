@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Legend, Tooltip } from 'recharts';
 import authService from '../services/AuthService';
+import ExpenseModal from './ExpenseModal';
 import './holdings.css';
 
-const ExpenseReport = () => {
+const ExpenseReport = ({ initialView = 'table' }) => {
   const [expenses, setExpenses] = useState([]);
   const [expenseSummary, setExpenseSummary] = useState({
     thisMonth: 0,
@@ -14,6 +16,9 @@ const ExpenseReport = () => {
   const [error, setError] = useState(null);
   const [selectedPeriod, setSelectedPeriod] = useState('thisMonth');
   const [selectedCategory, setSelectedCategory] = useState(null);
+  const [viewMode, setViewMode] = useState(initialView); // 'table', 'chart', or 'admin'
+  const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
+  const [selectedChartCategory, setSelectedChartCategory] = useState(null); // For chart drill-down
 
   useEffect(() => {
     fetchExpenseData();
@@ -70,6 +75,13 @@ const ExpenseReport = () => {
     } else {
       // Set the new category filter
       setSelectedCategory(categoryName);
+    }
+  };
+
+  const handleExpenseModalClose = (shouldRefetch) => {
+    setIsExpenseModalOpen(false);
+    if (shouldRefetch) {
+      fetchExpenseData(); // Refresh expense data after adding new expense
     }
   };
 
@@ -334,6 +346,61 @@ const ExpenseReport = () => {
       .slice(0, 5); // Top 5 categories
   };
 
+  // Chart helper functions
+  const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884D8', '#82CA9D', '#FFC658', '#8DD1E1'];
+
+  const getCategoryChartData = () => {
+    const filteredExpenses = getFilteredExpenses();
+    const categoryTotals = {};
+
+    filteredExpenses.forEach(expense => {
+      const category = expense.category || 'Other';
+      categoryTotals[category] = (categoryTotals[category] || 0) + parseFloat(expense.amount || 0);
+    });
+
+    const total = Object.values(categoryTotals).reduce((sum, val) => sum + val, 0);
+    
+    return Object.entries(categoryTotals)
+      .map(([name, value]) => ({
+        name,
+        value,
+        percentage: total > 0 ? ((value / total) * 100).toFixed(1) : 0
+      }))
+      .sort((a, b) => b.value - a.value);
+  };
+
+  const getSubcategoryChartData = () => {
+    if (!selectedChartCategory) return [];
+    
+    const filteredExpenses = getFilteredExpenses();
+    const subcategoryTotals = {};
+
+    filteredExpenses
+      .filter(expense => expense.category === selectedChartCategory)
+      .forEach(expense => {
+        const subcategory = expense.subcategory || 'Other';
+        subcategoryTotals[subcategory] = (subcategoryTotals[subcategory] || 0) + parseFloat(expense.amount || 0);
+      });
+
+    const total = Object.values(subcategoryTotals).reduce((sum, val) => sum + val, 0);
+    
+    return Object.entries(subcategoryTotals)
+      .map(([name, value]) => ({
+        name,
+        value,
+        percentage: total > 0 ? ((value / total) * 100).toFixed(1) : 0
+      }))
+      .sort((a, b) => b.value - a.value);
+  };
+
+  const handleChartCategoryClick = (categoryName) => {
+    if (selectedChartCategory === categoryName) {
+      setSelectedChartCategory(null);
+    } else {
+      setSelectedChartCategory(categoryName);
+    }
+  };
+
   if (loading) {
     return (
       <div className="holdings-container">
@@ -407,6 +474,149 @@ const ExpenseReport = () => {
         </div>
       </div>
 
+      {/* View Mode Toggle */}
+      <div className="view-toggle">
+        <button 
+          className={`view-btn ${viewMode === 'table' ? 'active' : ''}`}
+          onClick={() => setViewMode('table')}
+        >
+          📋 Table View
+        </button>
+        <button 
+          className={`view-btn ${viewMode === 'chart' ? 'active' : ''}`}
+          onClick={() => setViewMode('chart')}
+        >
+          📊 Chart View
+        </button>
+        <button 
+          className={`view-btn ${viewMode === 'admin' ? 'active' : ''}`}
+          onClick={() => setViewMode('admin')}
+        >
+          ⚙️ Admin
+        </button>
+      </div>
+
+      {viewMode === 'admin' ? (
+        <div className="expense-admin-section">
+          <div className="admin-header">
+            <h3>Expense Administration</h3>
+            <button 
+              className="btn-add-expense"
+              onClick={() => setIsExpenseModalOpen(true)}
+            >
+              ➕ Add New Expense
+            </button>
+          </div>
+          <div className="admin-info">
+            <p>Use this section to add new expenses to your tracker.</p>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">📝</div>
+                <div className="stat-content">
+                  <h4>Total Expenses</h4>
+                  <p className="stat-value">{expenses.length}</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📅</div>
+                <div className="stat-content">
+                  <h4>This Month</h4>
+                  <p className="stat-value">{formatCurrency(expenseSummary.thisMonth)}</p>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📊</div>
+                <div className="stat-content">
+                  <h4>Last 3 Months</h4>
+                  <p className="stat-value">{formatCurrency(expenseSummary.last3Months)}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : viewMode === 'chart' ? (
+        <>
+          {/* Chart View */}
+          <div className="chart-view-container">
+            {selectedChartCategory && (
+              <div className="chart-breadcrumb">
+                <button 
+                  className="breadcrumb-link" 
+                  onClick={() => setSelectedChartCategory(null)}
+                >
+                  ← Back to All Categories
+                </button>
+                <span className="breadcrumb-current">{selectedChartCategory}</span>
+              </div>
+            )}
+            
+            <div className="chart-card-single">
+              <h3>
+                {selectedChartCategory 
+                  ? `${selectedChartCategory} - Subcategory Breakdown` 
+                  : 'Expense by Category'}
+              </h3>
+              {!selectedChartCategory && (
+                <p className="chart-hint">Click on a category to see subcategory breakdown</p>
+              )}
+              
+              <ResponsiveContainer width="100%" height={400}>
+                <PieChart>
+                  <Pie
+                    data={selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, percentage }) => `${name} (${percentage}%)`}
+                    outerRadius={120}
+                    fill="#8884d8"
+                    dataKey="value"
+                    onClick={(data) => !selectedChartCategory && handleChartCategoryClick(data.name)}
+                    style={{ cursor: selectedChartCategory ? 'default' : 'pointer' }}
+                  >
+                    {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => formatCurrency(value)} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+
+              <div className="chart-summary">
+                <h4>
+                  {selectedChartCategory 
+                    ? `${selectedChartCategory} Subcategories` 
+                    : 'Category Summary'}
+                </h4>
+                <table className="summary-table">
+                  <thead>
+                    <tr>
+                      <th>{selectedChartCategory ? 'Subcategory' : 'Category'}</th>
+                      <th>Amount</th>
+                      <th>Percentage</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((item, index) => (
+                      <tr 
+                        key={index}
+                        onClick={() => !selectedChartCategory && handleChartCategoryClick(item.name)}
+                        style={{ cursor: selectedChartCategory ? 'default' : 'pointer' }}
+                      >
+                        <td>{item.name}</td>
+                        <td>{formatCurrency(item.value)}</td>
+                        <td>{item.percentage}%</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </>
+      ) : (
+        <>
       {/* Category Breakdown */}
       <div className="expense-categories">
         <h3>Top Categories - {selectedPeriod === 'thisMonth' ? 'This Month' : selectedPeriod === 'last3Months' ? 'Last 3 Months' : 'Last 6 Months'}</h3>
@@ -477,6 +687,14 @@ const ExpenseReport = () => {
           </div>
         )}
       </div>
+        </>
+      )}
+
+      {/* Expense Modal */}
+      <ExpenseModal 
+        isOpen={isExpenseModalOpen}
+        onClose={handleExpenseModalClose}
+      />
     </div>
   );
 };

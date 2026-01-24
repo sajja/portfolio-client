@@ -112,8 +112,8 @@ const App = () => {
       <main className="app-main">
         {activeMenu === 'home' && <Home />}
         {activeMenu === 'portfolio' && <Portfolio />}
-        {activeMenu === 'expense-admin' && <div><h2>Expense Admin</h2><p>Expense Admin content coming soon...</p></div>}
-        {activeMenu === 'expense-report' && <ExpenseReport />}
+        {activeMenu === 'expense-admin' && <ExpenseReport initialView="admin" />}
+        {activeMenu === 'expense-report' && <ExpenseReport initialView="table" />}
         {activeMenu === 'notifications' && <Notifications />}
       </main>
     </div>
