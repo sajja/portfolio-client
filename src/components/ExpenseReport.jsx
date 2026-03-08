@@ -19,6 +19,7 @@ const ExpenseReport = ({ initialView = 'table' }) => {
   const [viewMode, setViewMode] = useState(initialView); // 'table', 'chart', or 'admin'
   const [isExpenseModalOpen, setIsExpenseModalOpen] = useState(false);
   const [selectedChartCategory, setSelectedChartCategory] = useState(null); // For chart drill-down
+  const [selectedSubcategory, setSelectedSubcategory] = useState(null); // For subcategory transaction view
 
   useEffect(() => {
     fetchExpenseData();
@@ -398,7 +399,28 @@ const ExpenseReport = ({ initialView = 'table' }) => {
       setSelectedChartCategory(null);
     } else {
       setSelectedChartCategory(categoryName);
+      setSelectedSubcategory(null); // Clear subcategory selection when changing category
     }
+  };
+
+  const handleSubcategoryClick = (subcategoryName) => {
+    if (selectedSubcategory === subcategoryName) {
+      setSelectedSubcategory(null);
+    } else {
+      setSelectedSubcategory(subcategoryName);
+    }
+  };
+
+  const getSubcategoryTransactions = () => {
+    if (!selectedChartCategory || !selectedSubcategory) return [];
+    
+    const filteredExpenses = getFilteredExpenses();
+    return filteredExpenses
+      .filter(expense => 
+        expense.category === selectedChartCategory && 
+        (expense.subcategory || 'Other') === selectedSubcategory
+      )
+      .sort((a, b) => new Date(b.date) - new Date(a.date)); // Sort by date, newest first
   };
 
   if (loading) {
@@ -542,76 +564,140 @@ const ExpenseReport = ({ initialView = 'table' }) => {
               <div className="chart-breadcrumb">
                 <button 
                   className="breadcrumb-link" 
-                  onClick={() => setSelectedChartCategory(null)}
+                  onClick={() => {
+                    setSelectedChartCategory(null);
+                    setSelectedSubcategory(null);
+                  }}
                 >
                   ← Back to All Categories
                 </button>
                 <span className="breadcrumb-current">{selectedChartCategory}</span>
+                {selectedSubcategory && (
+                  <>
+                    <span className="breadcrumb-separator"> / </span>
+                    <button 
+                      className="breadcrumb-link" 
+                      onClick={() => setSelectedSubcategory(null)}
+                    >
+                      ← Back to {selectedChartCategory}
+                    </button>
+                    <span className="breadcrumb-current">{selectedSubcategory}</span>
+                  </>
+                )}
               </div>
             )}
             
             <div className="chart-card-single">
               <h3>
-                {selectedChartCategory 
-                  ? `${selectedChartCategory} - Subcategory Breakdown` 
-                  : 'Expense by Category'}
+                {selectedSubcategory
+                  ? `${selectedChartCategory} - ${selectedSubcategory} Transactions`
+                  : selectedChartCategory 
+                    ? `${selectedChartCategory} - Subcategory Breakdown` 
+                    : 'Expense by Category'}
               </h3>
-              {!selectedChartCategory && (
+              {!selectedChartCategory && !selectedSubcategory && (
                 <p className="chart-hint">Click on a category to see subcategory breakdown</p>
               )}
+              {selectedChartCategory && !selectedSubcategory && (
+                <p className="chart-hint">Click on a subcategory to see individual transactions</p>
+              )}
               
-              <ResponsiveContainer width="100%" height={400}>
-                <PieChart>
-                  <Pie
-                    data={selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()}
-                    cx="50%"
-                    cy="50%"
-                    labelLine={false}
-                    label={({ name, percentage }) => `${name} (${percentage}%)`}
-                    outerRadius={120}
-                    fill="#8884d8"
-                    dataKey="value"
-                    onClick={(data) => !selectedChartCategory && handleChartCategoryClick(data.name)}
-                    style={{ cursor: selectedChartCategory ? 'default' : 'pointer' }}
-                  >
-                    {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={(value) => formatCurrency(value)} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-
-              <div className="chart-summary">
-                <h4>
-                  {selectedChartCategory 
-                    ? `${selectedChartCategory} Subcategories` 
-                    : 'Category Summary'}
-                </h4>
-                <table className="summary-table">
-                  <thead>
-                    <tr>
-                      <th>{selectedChartCategory ? 'Subcategory' : 'Category'}</th>
-                      <th>Amount</th>
-                      <th>Percentage</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((item, index) => (
-                      <tr 
-                        key={index}
-                        onClick={() => !selectedChartCategory && handleChartCategoryClick(item.name)}
+              {selectedSubcategory ? (
+                // Show transaction list for selected subcategory
+                <div className="subcategory-transactions">
+                  {getSubcategoryTransactions().length > 0 ? (
+                    <table className="expense-table">
+                      <thead>
+                        <tr>
+                          <th>Date</th>
+                          <th>Description</th>
+                          <th>Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {getSubcategoryTransactions().map((expense) => (
+                          <tr key={expense.id}>
+                            <td>{new Date(expense.date).toLocaleDateString()}</td>
+                            <td className="expense-description">{expense.description || 'No description'}</td>
+                            <td className="expense-amount">{formatCurrency(expense.amount)}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                      <tfoot>
+                        <tr>
+                          <td colSpan="2" style={{ textAlign: 'right', fontWeight: 'bold' }}>Total:</td>
+                          <td className="expense-amount" style={{ fontWeight: 'bold' }}>
+                            {formatCurrency(
+                              getSubcategoryTransactions().reduce((sum, exp) => sum + parseFloat(exp.amount || 0), 0)
+                            )}
+                          </td>
+                        </tr>
+                      </tfoot>
+                    </table>
+                  ) : (
+                    <div className="no-data">
+                      <p>No transactions found for this subcategory</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Show pie chart and summary table when no subcategory is selected
+                <>
+                  <ResponsiveContainer width="100%" height={400}>
+                    <PieChart>
+                      <Pie
+                        data={selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, percentage }) => `${name} (${percentage}%)`}
+                        outerRadius={120}
+                        fill="#8884d8"
+                        dataKey="value"
+                        onClick={(data) => !selectedChartCategory && handleChartCategoryClick(data.name)}
                         style={{ cursor: selectedChartCategory ? 'default' : 'pointer' }}
                       >
-                        <td>{item.name}</td>
-                        <td>{formatCurrency(item.value)}</td>
-                        <td>{item.percentage}%</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
+                        {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip formatter={(value) => formatCurrency(value)} />
+                      <Legend />
+                    </PieChart>
+                  </ResponsiveContainer>
+
+                  <div className="chart-summary">
+                    <h4>
+                      {selectedChartCategory 
+                        ? `${selectedChartCategory} Subcategories` 
+                        : 'Category Summary'}
+                    </h4>
+                    <table className="summary-table">
+                      <thead>
+                        <tr>
+                          <th>{selectedChartCategory ? 'Subcategory' : 'Category'}</th>
+                          <th>Amount</th>
+                          <th>Percentage</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(selectedChartCategory ? getSubcategoryChartData() : getCategoryChartData()).map((item, index) => (
+                          <tr 
+                            key={index}
+                            onClick={() => selectedChartCategory ? handleSubcategoryClick(item.name) : handleChartCategoryClick(item.name)}
+                            style={{ cursor: 'pointer' }}
+                            className={selectedSubcategory === item.name ? 'selected-row' : ''}
+                          >
+                            <td>{item.name}</td>
+                            <td>{formatCurrency(item.value)}</td>
+                            <td>{item.percentage}%</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </>
+              )}
             </div>
           </div>
         </>

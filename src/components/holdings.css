@@ -743,9 +743,9 @@
 }
 
 .stat-card h4 {
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.75rem 0;
   color: #2c3e50;
-  font-size: 1.1rem;
+  font-size: 0.9rem;
 }
 
 .stat-numbers {
@@ -754,7 +754,7 @@
 }
 
 .stat-count {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   color: #6c757d;
 }
 
@@ -764,8 +764,13 @@
   color: #2c3e50;
 }
 
+/* Portfolio overview tile value – override the later generic .stat-value rule */
+.stat-numbers .stat-value {
+  font-size: 1.05rem;
+}
+
 .stat-change {
-  font-size: 0.9rem;
+  font-size: 0.78rem;
   font-weight: 600;
 }
 
@@ -2182,6 +2187,13 @@
   color: #667eea;
 }
 
+/* Portfolio overview tiles – keep values smaller than expense report */
+.stat-numbers .stat-value {
+  font-size: 1.05rem;
+  font-weight: bold;
+  color: #2c3e50;
+}
+
 .expense-table-section h3 {
   color: #2c3e50;
   margin-bottom: 1.5rem;
@@ -2416,6 +2428,11 @@
   font-weight: 600;
 }
 
+.breadcrumb-separator {
+  color: #6c757d;
+  margin: 0 0.25rem;
+}
+
 /* Single Chart Card */
 .chart-card-single {
   background: white;
@@ -2509,6 +2526,15 @@
   background: #f8f9fa;
 }
 
+.summary-table tbody tr.selected-row {
+  background: #e3f2fd;
+  border-left: 4px solid #3498db;
+}
+
+.summary-table tbody tr.selected-row:hover {
+  background: #bbdefb;
+}
+
 .summary-table .category-name {
   font-weight: 600;
   color: #2c3e50;
@@ -2523,6 +2549,52 @@
 .summary-table .category-percentage {
   font-weight: 600;
   color: #3498db;
+}
+
+/* Subcategory Transactions */
+.subcategory-transactions {
+  margin-top: 1.5rem;
+}
+
+.subcategory-transactions .expense-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.subcategory-transactions .expense-table thead {
+  background: #f8f9fa;
+}
+
+.subcategory-transactions .expense-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  color: #495057;
+  border-bottom: 2px solid #dee2e6;
+}
+
+.subcategory-transactions .expense-table td {
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.subcategory-transactions .expense-table tbody tr:hover {
+  background: #f8f9fa;
+}
+
+.subcategory-transactions .expense-table tfoot {
+  background: #f8f9fa;
+  font-weight: 600;
+}
+
+.subcategory-transactions .expense-table tfoot td {
+  padding: 1rem;
+  border-top: 2px solid #dee2e6;
+  border-bottom: none;
 }
 
 /* Chart View Responsive */
