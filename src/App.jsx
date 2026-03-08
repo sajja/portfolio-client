@@ -83,14 +83,6 @@ const App = () => {
             </li>
             <li>
               <button 
-                onClick={() => handleMenuClick('expense-admin')}
-                className={`menu-button ${activeMenu === 'expense-admin' ? 'active' : ''}`}
-              >
-                Expense Admin
-              </button>
-            </li>
-            <li>
-              <button 
                 onClick={() => handleMenuClick('expense-report')}
                 className={`menu-button ${activeMenu === 'expense-report' ? 'active' : ''}`}
               >
@@ -112,7 +104,6 @@ const App = () => {
       <main className="app-main">
         {activeMenu === 'home' && <Home />}
         {activeMenu === 'portfolio' && <Portfolio />}
-        {activeMenu === 'expense-admin' && <ExpenseReport initialView="admin" />}
         {activeMenu === 'expense-report' && <ExpenseReport initialView="table" />}
         {activeMenu === 'notifications' && <Notifications />}
       </main>
