@@ -8,6 +8,9 @@ const FixedDeposits = ({ onBack }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showFixedDepositModal, setShowFixedDepositModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [fdToDelete, setFdToDelete] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const fetchFixedDeposits = async () => {
     try {
@@ -51,6 +54,38 @@ const FixedDeposits = ({ onBack }) => {
 
   const handleAddFDClick = () => {
     setShowFixedDepositModal(true);
+  };
+
+  const handleDeleteClick = (fd) => {
+    setFdToDelete(fd);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteCancel = () => {
+    setShowDeleteModal(false);
+    setFdToDelete(null);
+    setIsDeleting(false);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (!fdToDelete) return;
+    setIsDeleting(true);
+    try {
+      const response = await authService.makeAuthenticatedRequest(`api/v1/portfolio/fd/${fdToDelete.id}`, {
+        method: 'DELETE'
+      });
+      if (!response.ok) {
+        throw new Error(`Failed to delete fixed deposit: ${response.status}`);
+      }
+      setFixedDeposits(prev => prev.filter(fd => fd.id !== fdToDelete.id));
+      setShowDeleteModal(false);
+      setFdToDelete(null);
+    } catch (err) {
+      console.error('Error deleting fixed deposit:', err);
+      alert(`Failed to delete fixed deposit: ${err.message}`);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleFixedDepositModalClose = (success) => {
@@ -150,6 +185,7 @@ const FixedDeposits = ({ onBack }) => {
               <th>Interest Earned</th>
               <th>Start Date</th>
               <th>Maturity Date</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -163,6 +199,15 @@ const FixedDeposits = ({ onBack }) => {
                 <td className="interest-earned positive">{formatNumber(fd.interestEarned)}</td>
                 <td>{fd.startDate ? new Date(fd.startDate).toLocaleDateString() : 'N/A'}</td>
                 <td>{fd.maturityDate ? new Date(fd.maturityDate).toLocaleDateString() : 'N/A'}</td>
+                <td>
+                  <button
+                    className="action-btn delete-row-btn"
+                    onClick={() => handleDeleteClick(fd)}
+                    title="Delete deposit"
+                  >
+                    🗑️
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -180,6 +225,71 @@ const FixedDeposits = ({ onBack }) => {
         isOpen={showFixedDepositModal}
         onClose={handleFixedDepositModalClose}
       />
+
+      {/* Delete Confirmation Modal */}
+      <DeleteConfirmationModal
+        isOpen={showDeleteModal}
+        onCancel={handleDeleteCancel}
+        onConfirm={handleDeleteConfirm}
+        fdInfo={fdToDelete}
+        isDeleting={isDeleting}
+      />
+    </div>
+  );
+};
+
+const DeleteConfirmationModal = ({ isOpen, onCancel, onConfirm, fdInfo, isDeleting }) => {
+  if (!isOpen || !fdInfo) return null;
+
+  return (
+    <div className="delete-modal">
+      <div className="modal-content">
+        <span className="close" onClick={onCancel}>&times;</span>
+        <h2>🗑️ Confirm Delete</h2>
+
+        <div className="delete-confirmation">
+          <p>Are you sure you want to delete this fixed deposit?</p>
+
+          <div className="account-details">
+            <div className="form-group">
+              <label>Bank:</label>
+              <span>{fdInfo.bank}</span>
+            </div>
+            <div className="form-group">
+              <label>Principal Amount:</label>
+              <span>{new Intl.NumberFormat('en-US').format(fdInfo.amount)}</span>
+            </div>
+            <div className="form-group">
+              <label>Interest Rate:</label>
+              <span>{fdInfo.interestRate.toFixed(2)}%</span>
+            </div>
+          </div>
+
+          <div className="warning-text">
+            <span>⚠️</span>
+            <p>This action cannot be undone.</p>
+          </div>
+        </div>
+
+        <div className="modal-actions">
+          <button
+            type="button"
+            onClick={onCancel}
+            className="btn-cancel"
+            disabled={isDeleting}
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            className="btn-delete"
+            disabled={isDeleting}
+          >
+            {isDeleting ? 'Deleting...' : 'Delete Deposit'}
+          </button>
+        </div>
+      </div>
     </div>
   );
 };
