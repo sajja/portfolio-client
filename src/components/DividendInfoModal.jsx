@@ -89,25 +89,31 @@ const DividendInfoModal = ({ isOpen, onClose, holdings }) => {
   const calculatePortfolioSummary = () => {
     if (!dividendData) return {};
 
-    const calculatePeriodSummary = (data, periodName, monthsCount) => {
+    // Total cost basis of all held positions — same denominator used by the server
+    const portfolioCostBasis = (holdings || []).reduce(
+      (sum, h) => sum + h.shares * h.avgPrice, 0
+    );
+
+    const calculatePeriodSummary = (data, periodName) => {
       const dividends = data.dividends || [];
       const totalDividends = dividends.reduce((sum, div) => sum + div.amount, 0);
       const uniqueStocks = new Set(dividends.map(div => div.symbol));
-      const averageMonthlyYield = monthsCount > 0 ? (totalDividends / monthsCount) / 1000 * 100 : 0; // Rough yield calculation
+      // Yield = dividends received as % of total portfolio cost basis (consistent with server & per-ticker calc)
+      const dividendYield = portfolioCostBasis > 0 ? (totalDividends / portfolioCostBasis) * 100 : 0;
       
       return {
         period: periodName,
         totalDividends,
-        averageMonthlyYield,
+        averageMonthlyYield: dividendYield,
         stocksCount: uniqueStocks.size,
         paymentsCount: dividends.length
       };
     };
 
     return {
-      sixMonths: calculatePeriodSummary(dividendData.sixMonths, '6 Months', 6),
-      twelveMonths: calculatePeriodSummary(dividendData.twelveMonths, '12 Months', 12),
-      twentyFourMonths: calculatePeriodSummary(dividendData.twentyFourMonths, '24 Months', 24)
+      sixMonths: calculatePeriodSummary(dividendData.sixMonths, '6 Months'),
+      twelveMonths: calculatePeriodSummary(dividendData.twelveMonths, '12 Months'),
+      twentyFourMonths: calculatePeriodSummary(dividendData.twentyFourMonths, '24 Months')
     };
   };
 
@@ -133,7 +139,9 @@ const DividendInfoModal = ({ isOpen, onClose, holdings }) => {
 
       const totalAmount = dividends.reduce((sum, div) => sum + div.amount, 0);
       const quarterlyDividend = totalAmount / 4; // Approximate quarterly dividend
-      const annualYield = holding.currentPrice > 0 ? (totalAmount / (holding.currentPrice * holding.shares)) * 100 : 0;
+      // Use cost basis (shares × avgPrice) as denominator — same as server & aggregate calc
+      const costBasis = holding.shares * holding.avgPrice;
+      const annualYield = costBasis > 0 ? (totalAmount / costBasis) * 100 : 0;
       const sortedDividends = dividends.sort((a, b) => new Date(b.date) - new Date(a.date));
       
       return {
@@ -293,7 +301,7 @@ const DividendInfoModal = ({ isOpen, onClose, holdings }) => {
                         <span className="metric-value total-amount">{formatCurrency(summary.totalDividends)}</span>
                       </div>
                       <div className="summary-metric">
-                        <span className="metric-label">Avg Monthly Yield</span>
+                        <span className="metric-label">Dividend Yield</span>
                         <span className="metric-value yield-value">{formatPercent(summary.averageMonthlyYield)}</span>
                       </div>
                       <div className="summary-metric">

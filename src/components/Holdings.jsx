@@ -75,7 +75,8 @@ const Holdings = ({ onBack }) => {
 
   const totalMarketValue = holdings.reduce((sum, holding) => sum + holding.marketValue, 0);
   const totalGainLoss = holdings.reduce((sum, holding) => sum + holding.gainLoss, 0);
-  const totalGainLossPercent = (totalGainLoss / (totalMarketValue - totalGainLoss)) * 100;
+  const totalCostBasis = totalMarketValue - totalGainLoss;
+  const totalGainLossPercent = totalCostBasis !== 0 ? (totalGainLoss / totalCostBasis) * 100 : 0;
 
   // Calculate profits from API data
   const calculateProfit = (investment, profitPercent) => {
@@ -183,19 +184,22 @@ const Holdings = ({ onBack }) => {
   };
 
   // Get profit data from API or use defaults
-  const ytdProfit = profitSummary 
-    ? calculateProfit(profitSummary.summary_24_months.total_investment, profitSummary.summary_24_months.profit_percent)
-    : 0;
-  const last12MonthsProfit = profitSummary 
-    ? calculateProfit(profitSummary.summary_12_months.total_investment, profitSummary.summary_12_months.profit_percent)
-    : 0;
-  const last6MonthsProfit = profitSummary 
-    ? calculateProfit(profitSummary.summary_6_months.total_investment, profitSummary.summary_6_months.profit_percent)
-    : 0;
+  const ytdProfit = calculateProfit(
+    profitSummary?.summary_24_months?.total_investment ?? 0,
+    profitSummary?.summary_24_months?.profit_percent ?? 0
+  );
+  const last12MonthsProfit = calculateProfit(
+    profitSummary?.summary_12_months?.total_investment ?? 0,
+    profitSummary?.summary_12_months?.profit_percent ?? 0
+  );
+  const last6MonthsProfit = calculateProfit(
+    profitSummary?.summary_6_months?.total_investment ?? 0,
+    profitSummary?.summary_6_months?.profit_percent ?? 0
+  );
 
-  const ytdProfitPercent = profitSummary ? profitSummary.summary_24_months.profit_percent : 0;
-  const last12MonthsProfitPercent = profitSummary ? profitSummary.summary_12_months.profit_percent : 0;
-  const last6MonthsProfitPercent = profitSummary ? profitSummary.summary_6_months.profit_percent : 0;
+  const ytdProfitPercent = profitSummary?.summary_24_months?.profit_percent ?? 0;
+  const last12MonthsProfitPercent = profitSummary?.summary_12_months?.profit_percent ?? 0;
+  const last6MonthsProfitPercent = profitSummary?.summary_6_months?.profit_percent ?? 0;
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('en-US', {
@@ -205,10 +209,12 @@ const Holdings = ({ onBack }) => {
   };
 
   const formatPercent = (percent) => {
+    if (percent == null || !isFinite(percent)) return '0.00%';
     return `${percent >= 0 ? '+' : ''}${percent.toFixed(2)}%`;
   };
 
   const formatPositionSizing = (percent) => {
+    if (percent == null || !isFinite(percent)) return '0.00%';
     return `${percent.toFixed(2)}%`;
   };
 
